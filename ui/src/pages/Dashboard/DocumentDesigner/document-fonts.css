@@ -1,0 +1,24 @@
+@font-face {
+  font-family: DocumentSans;
+  src: url("../../../assets/document-fonts/DejaVuSans.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: DocumentSans;
+  src: url("../../../assets/document-fonts/DejaVuSans-Bold.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: DocumentSerif;
+  src: url("../../../assets/document-fonts/DejaVuSerif.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: DocumentSerif;
+  src: url("../../../assets/document-fonts/DejaVuSerif-Bold.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}

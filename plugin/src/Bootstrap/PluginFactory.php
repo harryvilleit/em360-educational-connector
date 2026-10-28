@@ -1,0 +1,134 @@
+<?php
+
+declare(strict_types=1);
+
+namespace EM360\SchoolConnector\Bootstrap;
+
+use EM360\SchoolConnector\Application\CompleteAuthorization;
+use EM360\SchoolConnector\Application\CreatePortalPage;
+use EM360\SchoolConnector\Application\DisconnectSchool;
+use EM360\SchoolConnector\Application\GetPortalBootstrap;
+use EM360\SchoolConnector\Application\GetSchoolDashboard;
+use EM360\SchoolConnector\Application\SaveSettings;
+use EM360\SchoolConnector\Application\SignOut;
+use EM360\SchoolConnector\Application\StartAuthorization;
+use EM360\SchoolConnector\Application\StudentPortal;
+use EM360\SchoolConnector\Application\UserManagement;
+use EM360\SchoolConnector\Infrastructure\Http\UserManagementApi;
+use EM360\SchoolConnector\Presentation\UserManagementController;
+use EM360\SchoolConnector\Infrastructure\Http\Em360ApiClient;
+use EM360\SchoolConnector\Infrastructure\Security\OpenSslCredentialCipher;
+use EM360\SchoolConnector\Infrastructure\Security\SecureTokenGenerator;
+use EM360\SchoolConnector\Infrastructure\Storage\BrowserSessionStore;
+use EM360\SchoolConnector\Infrastructure\Storage\PendingRequestStore;
+use EM360\SchoolConnector\Infrastructure\SystemClock;
+use EM360\SchoolConnector\Infrastructure\WordPress\EncryptedTransientStore;
+use EM360\SchoolConnector\Infrastructure\WordPress\OptionConnectionStore;
+use EM360\SchoolConnector\Infrastructure\WordPress\OptionSettingsStore;
+use EM360\SchoolConnector\Infrastructure\WordPress\SecureCookieJar;
+use EM360\SchoolConnector\Infrastructure\WordPress\PluginUpdater;
+use EM360\SchoolConnector\Infrastructure\WordPress\WordPressHttpClient;
+use EM360\SchoolConnector\Infrastructure\WordPress\WordPressPortalPages;
+use EM360\SchoolConnector\Infrastructure\WordPress\WordPressWebsiteContext;
+use EM360\SchoolConnector\Presentation\AdminController;
+use EM360\SchoolConnector\Presentation\AdminGuard;
+use EM360\SchoolConnector\Presentation\AdminNotices;
+use EM360\SchoolConnector\Presentation\CallbackController;
+use EM360\SchoolConnector\Presentation\ErrorResponder;
+use EM360\SchoolConnector\Presentation\Navigation;
+use EM360\SchoolConnector\Presentation\PortalRestController;
+use EM360\SchoolConnector\Presentation\PortalShortcode;
+use EM360\SchoolConnector\Presentation\PortalPageLayout;
+use EM360\SchoolConnector\Presentation\RequestGuard;
+use EM360\SchoolConnector\Presentation\StudentPortalController;
+use EM360\SchoolConnector\Presentation\TemplateRenderer;
+
+/** The only composition root: dependencies are passed explicitly, never located by services. */
+final class PluginFactory
+{
+    public function create(string $pluginFile, string $version): Plugin
+    {
+        $clock = new SystemClock();
+        $tokens = new SecureTokenGenerator();
+        $cipher = new OpenSslCredentialCipher(wp_salt('auth'));
+        $settings = new OptionSettingsStore();
+        $connections = new OptionConnectionStore($cipher);
+        $storage = new EncryptedTransientStore($cipher);
+        $sessions = new BrowserSessionStore($storage, new SecureCookieJar(), $tokens, $clock);
+        $pending = new PendingRequestStore($storage);
+        $website = new WordPressWebsiteContext();
+        $pages = new WordPressPortalPages();
+        $api = new Em360ApiClient(new WordPressHttpClient(), $settings);
+        $start = new StartAuthorization($api, $api, $settings, $connections, $sessions, $pending, $tokens, $website);
+        $complete = new CompleteAuthorization($api, $connections, $sessions, $pending, $clock);
+        $views = new TemplateRenderer(dirname($pluginFile) . '/templates');
+        $notices = new AdminNotices();
+        $navigation = new Navigation($notices, $settings, $pages);
+        $errors = new ErrorResponder();
+
+        return new Plugin(
+            new AdminController(
+                new SaveSettings($settings, $connections),
+                $start,
+                new DisconnectSchool($api, $connections),
+                new CreatePortalPage($settings, $pages),
+                $settings,
+                $connections,
+                $pages,
+                new AdminGuard(),
+                $notices,
+                $navigation,
+                $views,
+                $errors,
+                $pluginFile,
+                $version,
+            ),
+            new CallbackController($complete, $navigation, $errors),
+            new PortalRestController(
+                new GetPortalBootstrap($sessions, $connections, $clock),
+                new GetSchoolDashboard($api, $sessions, $connections, $clock),
+                $start,
+                new SignOut($api, $sessions),
+                new RequestGuard($sessions, $website),
+                $errors,
+            ),
+            new PortalShortcode($views, $pluginFile, $version),
+            new UserManagementController(
+                new UserManagement(
+                    new UserManagementApi(new WordPressHttpClient(), $settings, json_decode(
+                        (string) file_get_contents(dirname($pluginFile) . '/resources/user-management-routes.json'),
+                        true,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    )),
+                    $sessions,
+                    $connections,
+                    $clock,
+                ),
+                new RequestGuard($sessions, $website),
+                $errors,
+                $pluginFile,
+                $settings,
+            ),
+            new PortalPageLayout(dirname($pluginFile) . '/templates/workspace.php'),
+            new PluginUpdater($settings, $pluginFile, $version),
+            new StudentPortalController(
+                new StudentPortal(
+                    new UserManagementApi(new WordPressHttpClient(), $settings, json_decode(
+                        (string) file_get_contents(dirname($pluginFile) . '/resources/student-portal-routes.json'),
+                        true,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    ), 'student-portal'),
+                    $sessions,
+                    $connections,
+                    $clock,
+                ),
+                new RequestGuard($sessions, $website),
+                $errors,
+                $pluginFile,
+                $settings,
+            ),
+        );
+    }
+}

@@ -1,0 +1,1 @@
+{"extends":"./tsconfig.app.json","compilerOptions":{"tsBuildInfoFile":"./node_modules/.tmp/tsconfig.wordpress.tsbuildinfo"},"include":["wordpress","src/types/naija-state-local-government.d.ts"],"exclude":[]}

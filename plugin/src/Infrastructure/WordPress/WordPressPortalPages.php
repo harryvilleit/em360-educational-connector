@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace EM360\SchoolConnector\Infrastructure\WordPress;
+
+use EM360\SchoolConnector\Contracts\PortalPageGatewayInterface;
+use EM360\SchoolConnector\Domain\ConnectorException;
+use EM360\SchoolConnector\Domain\PortalAudience;
+
+final class WordPressPortalPages implements PortalPageGatewayInterface
+{
+    public function isPublished(int $id): bool
+    {
+        return $id > 0 && get_post_status($id) === 'publish';
+    }
+
+    public function create(string $title, PortalAudience $audience = PortalAudience::Staff): int
+    {
+        $student = $audience === PortalAudience::Student;
+        $id = wp_insert_post([
+            'post_title' => $title,
+            'post_name' => $student ? 'student-portal' : 'school-portal',
+            'post_content' => $student ? '[em360_student_portal]' : '[em360_school_portal]',
+            'post_type' => 'page',
+            'post_status' => 'publish',
+        ], true);
+        if (is_wp_error($id)) {
+            throw new ConnectorException('The portal page could not be created.', 503);
+        }
+        return $id;
+    }
+
+    public function url(int $id): string
+    {
+        return $this->isPublished($id) ? (get_permalink($id) ?: home_url('/')) : home_url('/');
+    }
+}

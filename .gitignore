@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.pem
+*.log
+.DS_Store
+# Built React bundles are produced by `npm run build:wordpress` in ui/.
+plugin/assets/*-v*/

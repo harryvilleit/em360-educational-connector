@@ -1,0 +1,867 @@
+/* The standalone portal owns its canvas; the rest of the WordPress theme is untouched. */
+body.em360-workspace-page {
+  --em-admin-bar: 0px;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: calc(100vh - var(--em-admin-bar));
+  height: calc(100dvh - var(--em-admin-bar));
+  overflow: hidden;
+  background: #f8fafc;
+}
+body.em360-workspace-page.admin-bar {
+  --em-admin-bar: 32px;
+}
+body.em360-workspace-page #wpadminbar {
+  position: fixed !important;
+}
+.em360-skip-link {
+  position: fixed;
+  left: 16px;
+  top: -100px;
+  z-index: 100000;
+  padding: 12px 18px;
+  background: white;
+  color: #1d4ed8;
+  border-radius: 8px;
+}
+.em360-skip-link:focus {
+  top: 48px;
+}
+.em360-portal,
+.em360-admin {
+  --em-ink: #0f172a;
+  --em-blue: #2563eb;
+  --em-border: #e2e8f0;
+  color: var(--em-ink);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+}
+.em360-portal,
+.em360-portal *,
+.em360-admin * {
+  box-sizing: border-box;
+}
+.em360-portal {
+  position: relative;
+  width: 100%;
+  max-width: none !important;
+  height: 900px;
+  max-height: calc(100dvh - 48px);
+  min-height: 540px;
+  margin: 24px auto;
+  padding: 0 !important;
+  background: #f8fafc;
+  border: 1px solid var(--em-border);
+  border-radius: 16px;
+  overflow: hidden;
+  isolation: isolate;
+}
+body.em360-workspace-page .em360-portal {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  margin: 0 !important;
+  border: 0;
+  border-radius: 0;
+}
+.em360-portal svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.em360-portal h1,
+.em360-portal h2,
+.em360-portal h3,
+.em360-portal p {
+  font-family: inherit;
+  color: inherit;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.em360-portal h1,
+.em360-portal h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+.em360-portal h3 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+.em360-portal p {
+  margin: 12px 0;
+}
+.em360-portal .em360-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  appearance: none;
+  min-height: 40px;
+  width: auto;
+  margin: 0;
+  border: 1px solid var(--em-blue);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--em-blue);
+  color: white;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: normal;
+  box-shadow: none;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+.em360-portal .em360-button:hover {
+  background: #1d4ed8;
+  color: white;
+}
+.em360-portal .em360-secondary {
+  background: white;
+  color: #475569;
+  border-color: var(--em-border);
+}
+.em360-portal .em360-secondary:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.em360-portal .em360-button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.em360-portal :is(button, a, summary):focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 3px;
+}
+.em360-portal .em360-icon-button {
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  flex-shrink: 0;
+}
+.em360-portal .em360-icon-button .em360-button-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.em360-portal .em360-app {
+  --em-sidebar: 248px;
+  display: grid;
+  grid-template-columns: var(--em-sidebar) minmax(0, 1fr);
+  grid-template-rows: 72px minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+}
+.em360-portal .em360-sidebar {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background:
+    radial-gradient(circle at 12% 0%, #ffffff16, transparent 35%),
+    linear-gradient(175deg, #1d4ed8, #2563eb 40%, #4338ca);
+  color: white;
+  overflow: hidden;
+}
+.em360-portal .em360-sidebar-header {
+  height: 84px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #ffffff1c;
+}
+.em360-portal .em360-brand {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  min-width: 0;
+  color: #0f172a;
+}
+.em360-portal .em360-sidebar .em360-brand {
+  color: white;
+}
+.em360-portal .em360-brand-mark {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #ffffff20;
+  border: 1px solid #ffffff40;
+}
+.em360-portal .em360-brand-mark svg {
+  width: 23px;
+  height: 23px;
+}
+.em360-portal .em360-brand-text {
+  display: grid;
+  gap: 1px;
+  white-space: nowrap;
+}
+.em360-portal .em360-brand strong {
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.6px;
+}
+.em360-portal .em360-brand-text span {
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  color: #bfdbfe;
+}
+.em360-portal .em360-sidebar h3 {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.5;
+  color: #bfdbfe;
+  padding: 24px 24px 12px;
+  margin: 0;
+  white-space: nowrap;
+}
+.em360-portal .em360-sidebar-nav {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0 12px 16px;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff60 transparent;
+}
+.em360-portal .em360-sidebar-nav .em360-button {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  min-height: 44px;
+  justify-content: flex-start;
+  padding: 11px 14px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  font-weight: 500;
+  color: #dbeafe;
+  white-space: normal;
+  gap: 12px;
+}
+.em360-portal .em360-sidebar-nav .em360-button:hover {
+  background: #ffffff15;
+  color: white;
+}
+.em360-portal .em360-sidebar-nav .em360-button[aria-current="page"] {
+  background: white;
+  color: #1d4ed8;
+  box-shadow: 0 2px 8px #0f172a14;
+  font-weight: 600;
+}
+.em360-portal .em360-sidebar-nav .em360-button svg {
+  width: 18px;
+  height: 18px;
+}
+.em360-portal .em360-sidebar-footer {
+  border-top: 1px solid #ffffff20;
+  padding: 18px 24px;
+  flex-shrink: 0;
+}
+.em360-portal .em360-site-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.em360-portal .em360-site-link:hover {
+  color: #2563eb;
+}
+.em360-portal .em360-sidebar .em360-site-link {
+  color: #dbeafe;
+}
+.em360-portal .em360-sidebar .em360-site-link:hover {
+  color: white;
+}
+.em360-portal .em360-site-link svg {
+  width: 16px;
+  height: 16px;
+}
+.em360-portal .em360-topbar {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 12px 24px;
+  background: white;
+  border-bottom: 1px solid var(--em-border);
+  z-index: 20;
+}
+.em360-portal .em360-school-heading {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+.em360-portal .em360-school-heading strong {
+  font-size: 16px;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+.em360-portal .em360-school-heading span {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.em360-portal .em360-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.em360-portal .em360-profile {
+  position: relative;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+.em360-portal .em360-profile summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+  cursor: pointer;
+  border: 0;
+  border-radius: 10px;
+  padding: 4px 10px 4px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  background: transparent;
+  white-space: nowrap;
+}
+.em360-portal .em360-profile summary::-webkit-details-marker {
+  display: none;
+}
+.em360-portal .em360-profile summary::before,
+.em360-portal .em360-profile summary::after {
+  display: none;
+}
+.em360-portal .em360-profile summary > svg {
+  width: 14px;
+  height: 14px;
+  color: #94a3b8;
+}
+.em360-portal .em360-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid #dbeafe;
+}
+.em360-portal .em360-module-choices {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  width: 280px;
+  max-width: calc(100vw - 24px);
+  max-height: 65vh;
+  overflow: auto;
+  padding: 12px;
+  background: white;
+  border: 1px solid var(--em-border);
+  border-radius: 14px;
+  box-shadow: 0 14px 44px #0f172a1a;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.em360-portal .em360-module-choices > strong {
+  padding: 6px 8px 10px;
+  color: #64748b;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+.em360-portal .em360-module-choices .em360-button {
+  border: 0;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 13px;
+  white-space: normal;
+}
+.em360-portal .em360-module-choices [aria-current="true"] {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.em360-portal .em360-main {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  max-width: none;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #f8fafc;
+  outline: none;
+}
+.em360-portal .em360-contextbar {
+  min-height: 49px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 24px;
+  border-bottom: 1px solid #e2e8f080;
+  background: #fff9;
+}
+.em360-portal .em360-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  min-width: 0;
+  color: #64748b;
+}
+.em360-portal .em360-breadcrumb strong {
+  font-weight: 600;
+  color: #334155;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.em360-portal .em360-breadcrumb svg {
+  width: 13px;
+  height: 13px;
+  color: #94a3b8;
+}
+.em360-portal .em360-access {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 7px;
+  font-size: 11px;
+  color: #15803d;
+  font-weight: 500;
+}
+.em360-portal .em360-status-dot {
+  width: 6px;
+  height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #dcfce7;
+}
+.em360-portal .em360-access-paused {
+  color: #b45309;
+}
+.em360-portal .em360-access-paused .em360-status-dot {
+  background: #f59e0b;
+  box-shadow: 0 0 0 3px #fef3c7;
+}
+.em360-portal .em360-access-date {
+  font-weight: 400;
+  color: #94a3b8;
+  border-left: 1px solid var(--em-border);
+  margin-left: 3px;
+  padding-left: 10px;
+}
+.em360-portal .em360-content {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  padding: 28px;
+  overflow: auto;
+  border: 0;
+  border-radius: 0;
+  background: #f8fafc;
+}
+.em360-portal .em360-native-module {
+  padding: 0;
+  overflow: hidden;
+}
+.em360-portal .em360-module-frame {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: #f8fafc;
+}
+.em360-portal .em360-sidebar-collapsed {
+  --em-sidebar: 76px;
+}
+.em360-portal .em360-sidebar-collapsed .em360-sidebar-header {
+  padding: 18px 20px;
+}
+.em360-portal .em360-sidebar-collapsed .em360-brand-text,
+.em360-portal .em360-sidebar-collapsed .em360-sidebar .em360-button-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.em360-portal .em360-sidebar-collapsed .em360-sidebar h3 {
+  height: 32px;
+  visibility: hidden;
+  padding: 0;
+}
+.em360-portal .em360-sidebar-collapsed .em360-sidebar-nav {
+  padding: 0 12px 16px;
+}
+.em360-portal .em360-sidebar-collapsed .em360-sidebar-nav .em360-button {
+  justify-content: center;
+  padding: 13px;
+}
+.em360-portal .em360-sidebar-collapsed .em360-sidebar-footer {
+  padding: 20px 30px;
+}
+.em360-portal .em360-backdrop,
+.em360-portal .em360-drawer-close {
+  display: none;
+}
+.em360-portal .em360-welcome-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--em-border);
+  background: white;
+}
+.em360-portal .em360-welcome-header .em360-brand-mark {
+  background: #2563eb;
+  color: white;
+}
+.em360-portal .em360-welcome-header .em360-brand-text span {
+  color: #64748b;
+}
+.em360-portal:not(.em360-has-workspace) {
+  overflow: auto;
+}
+.em360-portal .em360-welcome {
+  width: calc(100% - 40px);
+  max-width: 560px;
+  margin: clamp(32px, 10vh, 120px) auto;
+  padding: 36px;
+  border: 1px solid var(--em-border);
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 8px 30px #0f172a05;
+  outline: none;
+}
+.em360-portal .em360-welcome p {
+  color: #64748b;
+  line-height: 1.7;
+}
+.em360-portal .em360-welcome .em360-button {
+  margin: 12px 0;
+  width: 100%;
+}
+.em360-portal .em360-eyebrow {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 1.6px;
+  color: #2563eb;
+}
+.em360-portal .em360-muted {
+  font-size: 13px;
+  color: #64748b;
+}
+.em360-portal .em360-message {
+  flex-shrink: 0;
+  padding: 12px 18px;
+  margin: 12px 20px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 13px;
+}
+.em360-portal .em360-error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+.em360-portal .em360-launcher,
+.em360-portal .em360-panel {
+  padding: 24px;
+  background: white;
+  border: 1px solid var(--em-border);
+  border-radius: 14px;
+  margin: 20px 0;
+}
+.em360-portal .em360-permissions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #64748b;
+}
+.em360-portal .em360-tag {
+  padding: 4px 10px;
+  border: 1px solid #dbeafe;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 999px;
+  font-size: 11px;
+}
+.em360-portal .em360-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.em360-portal .em360-stat {
+  padding: 24px;
+  border: 1px solid var(--em-border);
+  border-radius: 16px;
+  background: white;
+}
+.em360-portal .em360-stat span {
+  font-size: 12px;
+  color: #64748b;
+}
+.em360-portal .em360-stat strong {
+  display: block;
+  font-size: 32px;
+  margin-top: 8px;
+}
+/* WordPress administration keeps its ordinary page layout. */
+.em360-admin {
+  max-width: 900px;
+  padding: 26px 16px;
+}
+.em360-admin .em360-brand {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+.em360-admin .em360-brand span {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: #65748e;
+}
+.em360-admin .em360-panel {
+  background: #fff;
+  border: 1px solid var(--em-border);
+  padding: 24px;
+  border-radius: 14px;
+  margin: 22px 0;
+}
+.em360-admin label {
+  display: block;
+  margin: 16px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.em360-admin input:not([type="hidden"]) {
+  display: block;
+  max-width: 100%;
+  width: 620px;
+  padding: 10px;
+  margin-top: 6px;
+}
+.em360-admin input.button {
+  width: auto;
+  display: inline-block;
+}
+.em360-admin .em360-success {
+  color: #20784e;
+}
+.em360-admin h2 {
+  margin-top: 0;
+}
+@media (max-width: 1100px) {
+  .em360-portal .em360-profile-label,
+  .em360-portal .em360-access-date {
+    display: none;
+  }
+}
+@media (max-width: 900px) {
+  .em360-portal .em360-app {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 64px minmax(0, 1fr);
+  }
+  .em360-portal .em360-topbar,
+  .em360-portal .em360-main {
+    grid-column: 1;
+  }
+  .em360-portal .em360-topbar {
+    gap: 10px;
+    padding: 10px 14px;
+  }
+  .em360-portal .em360-sidebar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 268px;
+    max-width: calc(100% - 48px);
+    z-index: 50;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.18s ease,
+      visibility 0.18s;
+  }
+  .em360-portal .em360-drawer-open .em360-sidebar {
+    transform: translateX(0);
+    visibility: visible;
+    box-shadow: 12px 0 40px #0f172a30;
+  }
+  .em360-portal .em360-drawer-close {
+    display: inline-flex;
+    background: #ffffff15;
+    border: 0;
+    color: white;
+  }
+  .em360-portal .em360-drawer-open .em360-backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    background: #0f172a70;
+    z-index: 40;
+    cursor: pointer;
+  }
+  .em360-portal .em360-backdrop span {
+    display: none;
+  }
+  .em360-portal .em360-contextbar {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+  .em360-portal .em360-school-heading strong {
+    font-size: 14px;
+  }
+  .em360-portal .em360-content {
+    padding: 18px;
+  }
+  .em360-portal .em360-native-module {
+    padding: 0;
+  }
+}
+@media (max-width: 782px) {
+  body.em360-workspace-page.admin-bar {
+    --em-admin-bar: 46px;
+  }
+}
+@media (max-width: 600px) {
+  .em360-portal .em360-topbar {
+    gap: 8px;
+    padding: 10px;
+  }
+  .em360-portal .em360-actions {
+    gap: 2px;
+  }
+  .em360-portal .em360-profile summary {
+    gap: 0;
+    padding: 2px;
+  }
+  .em360-portal .em360-profile summary > svg {
+    display: none;
+  }
+  .em360-portal .em360-actions > .em360-icon-button {
+    width: 32px;
+    padding: 6px;
+  }
+  .em360-portal .em360-module-choices {
+    right: -70px;
+  }
+  .em360-portal .em360-contextbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+    padding: 9px 14px;
+  }
+  .em360-portal .em360-breadcrumb {
+    font-size: 11px;
+  }
+  .em360-portal .em360-breadcrumb span {
+    max-width: 46vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .em360-portal .em360-access {
+    font-size: 10px;
+  }
+  .em360-portal .em360-welcome {
+    padding: 28px 22px;
+  }
+  .em360-portal .em360-welcome-header {
+    padding: 18px 20px;
+  }
+  .em360-portal .em360-welcome-header .em360-site-link span {
+    display: none;
+  }
+  .em360-portal .em360-stats {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .em360-portal * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
