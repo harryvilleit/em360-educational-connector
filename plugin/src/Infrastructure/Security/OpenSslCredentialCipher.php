@@ -19,7 +19,7 @@ final class OpenSslCredentialCipher implements CredentialCipherInterface
     /** @param array<string, mixed> $value */
     public function encrypt(array $value): string
     {
-        $json = json_encode($value);
+        $json = wp_json_encode($value);
         if ($json === false) {
             throw new ConnectorException('Credential encoding failed.', 500);
         }

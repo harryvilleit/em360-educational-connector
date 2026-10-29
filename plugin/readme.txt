@@ -4,7 +4,7 @@ Tags: school management, education, school, staff portal, learning
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.26.0
+Stable tag: 0.26.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,9 @@ No. Exclude the portal pages, the plugin's REST routes and the sign-in callback 
 Disconnect the website first. Uninstalling removes the plugin's settings from WordPress. School records in EM360 and the pages the plugin created are kept.
 
 == Changelog ==
+
+= 0.26.1 =
+WordPress coding-standards pass for the plugin directory: portal frames are written by an escaped template, request values are unslashed and sanitised, the EM360 sign-in redirect uses wp_safe_redirect, and catalogue files load with wp_json_file_decode. No behaviour change.
 
 = 0.26.0 =
 School Management edition. Hostel, Staff (with availability) and Lesson Notes run from their own bundle again, and every screen's WordPress behaviour is now in readable source (`ui/wordpress/overrides/`): server-side teacher search and paging, saved result remarks and real result downloads, school-date attendance and timetable defaults, idempotent fee payments and reminders, invoices printed from the portal frame, and payment checkout opened in a new tab. The WordPress.org package leaves out the student sign-in portal.
@@ -199,6 +202,9 @@ Rebuilt PHP using typed domain models, focused application services, narrow inte
 Initial school-connector foundation: setup, approval, school-scoped sign-in, read-only dashboard and website revocation.
 
 == Upgrade Notice ==
+
+= 0.26.1 =
+Coding-standards fixes. No settings change.
 
 = 0.26.0 =
 Restores the dedicated Hostel, Staff and Lesson Notes screens. No settings change.

@@ -8,7 +8,7 @@ final class UrlPolicy
 {
     public static function isHttps(string $url): bool
     {
-        $parts = parse_url($url);
+        $parts = wp_parse_url($url);
         return is_array($parts) && ($parts['scheme'] ?? '') === 'https' && !empty($parts['host'])
             && !isset($parts['user']) && !isset($parts['pass'])
             && !isset($parts['query']) && !isset($parts['fragment']) && filter_var($url, FILTER_VALIDATE_URL) !== false;
@@ -16,7 +16,7 @@ final class UrlPolicy
 
     public static function origin(string $url): string
     {
-        $parts = parse_url($url);
+        $parts = wp_parse_url($url);
         if (!is_array($parts) || empty($parts['scheme']) || empty($parts['host'])) {
             return '';
         }
@@ -28,7 +28,7 @@ final class UrlPolicy
 
     public static function requireCallback(string $site, string $callback): void
     {
-        $parts = parse_url($callback);
+        $parts = wp_parse_url($callback);
         if (
             !self::isHttps($site) || !is_array($parts) || ($parts['scheme'] ?? '') !== 'https'
             || isset($parts['user']) || isset($parts['pass']) || isset($parts['fragment'])

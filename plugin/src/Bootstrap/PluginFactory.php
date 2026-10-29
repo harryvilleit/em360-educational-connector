@@ -69,12 +69,7 @@ final class PluginFactory
         $studentPortal = class_exists(StudentPortalController::class)
             ? new StudentPortalController(
                 new StudentPortal(
-                    new UserManagementApi(new WordPressHttpClient(), $settings, json_decode(
-                        (string) file_get_contents(dirname($pluginFile) . '/resources/student-portal-routes.json'),
-                        true,
-                        512,
-                        JSON_THROW_ON_ERROR
-                    ), 'student-portal'),
+                    new UserManagementApi(new WordPressHttpClient(), $settings, self::catalogue(dirname($pluginFile) . '/resources/student-portal-routes.json'), 'student-portal'),
                     $sessions,
                     $connections,
                     $clock,
@@ -116,12 +111,7 @@ final class PluginFactory
             new PortalShortcode($views, $pluginFile, $version, $studentPortal !== null),
             new UserManagementController(
                 new UserManagement(
-                    new UserManagementApi(new WordPressHttpClient(), $settings, json_decode(
-                        (string) file_get_contents(dirname($pluginFile) . '/resources/user-management-routes.json'),
-                        true,
-                        512,
-                        JSON_THROW_ON_ERROR
-                    )),
+                    new UserManagementApi(new WordPressHttpClient(), $settings, self::catalogue(dirname($pluginFile) . '/resources/user-management-routes.json')),
                     $sessions,
                     $connections,
                     $clock,
@@ -136,5 +126,15 @@ final class PluginFactory
             // The WordPress.org build ships without the self-updater and updates through WordPress.org.
             class_exists(PluginUpdater::class) ? new PluginUpdater($settings, $pluginFile, $version) : null,
         );
+    }
+
+    /** @return array<int, array<string, mixed>> The operation catalogue shipped with the plugin. */
+    private static function catalogue(string $file): array
+    {
+        $routes = wp_json_file_decode($file, ['associative' => true]);
+        if (!is_array($routes)) {
+            throw new \RuntimeException('A plugin operation catalogue is missing or invalid. Reinstall the plugin.');
+        }
+        return $routes;
     }
 }

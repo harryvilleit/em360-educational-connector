@@ -76,7 +76,7 @@ final class PortalShortcode
         if (is_singular() && ($post = get_post()) !== null
             && (has_shortcode($post->post_content, 'em360_school_portal') || has_shortcode($post->post_content, 'em360_student_portal'))) {
             if (!defined('DONOTCACHEPAGE')) {
-                define('DONOTCACHEPAGE', true);
+                define('DONOTCACHEPAGE', true); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- the shared constant page-cache plugins read.
             }
             nocache_headers();
             header('Referrer-Policy: no-referrer');

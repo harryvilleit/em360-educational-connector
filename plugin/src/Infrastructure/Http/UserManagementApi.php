@@ -76,7 +76,10 @@ final class UserManagementApi implements UserManagementGatewayInterface
             );
             $headers['Content-Type'] = $contentType;
         } elseif ($request->body !== null) {
-            $body = json_encode($request->body, JSON_THROW_ON_ERROR);
+            $body = wp_json_encode($request->body);
+            if ($body === false) {
+                throw new ConnectorException('The school operation could not be encoded.', 400);
+            }
             $headers['Content-Type'] = 'application/json';
         }
         return $this->send($sessionToken, $request->method, '/api' . $request->path . $query, $body, $headers);
@@ -100,10 +103,10 @@ final class UserManagementApi implements UserManagementGatewayInterface
         $data = json_decode($response->body, true);
         if ($response->status < 200 || $response->status >= 300) {
             $message = is_array($data) ? ($data['message'] ?? $data['Message'] ?? $data['title'] ?? '') : '';
-            throw new ConnectorException(
-                is_string($message) && $message !== '' ? $message : 'The school operation failed.',
-                $response->status >= 400 ? $response->status : 502,
-            );
+            $text = is_string($message) && $message !== '' ? $message : 'The school operation failed.';
+            $status = $response->status >= 400 ? $response->status : 502;
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plain API text returned as JSON; escaped wherever it is printed.
+            throw ConnectorException::fromApi($text, $status);
         }
         if ($response->status === 204) {
             return [];

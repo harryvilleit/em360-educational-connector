@@ -17,7 +17,7 @@ final class SecureCookieJar implements CookieJarInterface
 
     public function read(): ?string
     {
-        $value = $_COOKIE[$this->name()] ?? null;
+        $value = isset($_COOKIE[$this->name()]) ? sanitize_text_field(wp_unslash($_COOKIE[$this->name()])) : null;
         return is_ssl() && is_string($value) && Token::valid($value) ? $value : null;
     }
 

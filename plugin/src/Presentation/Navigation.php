@@ -32,8 +32,10 @@ final class Navigation
 
     public function authorization(string $url): never
     {
-        // Supplied only by StartAuthorization, which constructs it from validated settings.
-        wp_redirect($url, 302, 'EM360');
+        // Supplied only by StartAuthorization, which constructs it from validated settings: the EM360 sign-in page.
+        $host = (string) wp_parse_url($url, PHP_URL_HOST);
+        add_filter('allowed_redirect_hosts', static fn (array $hosts): array => $host === '' ? $hosts : [...$hosts, $host]);
+        wp_safe_redirect($url, 302, 'EM360');
         exit;
     }
 }

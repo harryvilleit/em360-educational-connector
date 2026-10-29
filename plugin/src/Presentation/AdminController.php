@@ -72,7 +72,7 @@ final class AdminController
         $config = $this->settings->get();
         $connection = $this->connections->get();
         // Pass only display fields to the template; credentials never reach a view model.
-        echo $this->views->render('admin', [
+        $this->views->display('admin', [
             's' => ['api_url' => $config->apiUrl, 'frontend_url' => $config->frontendUrl, 'page_id' => $config->pageId],
             'c' => $connection === null ? [] : ['schoolName' => $connection->schoolName],
             'notice' => $this->notices->take(),
@@ -143,8 +143,10 @@ final class AdminController
 
     private function field(string $name): string
     {
-        $value = $_POST[$name] ?? '';
-        return is_string($value) ? wp_unslash($value) : '';
+        // Every form handler calls AdminGuard::requireAction() (check_admin_referer) before reading fields.
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
+        $value = isset($_POST[$name]) ? sanitize_text_field(wp_unslash($_POST[$name])) : '';
+        return is_string($value) ? $value : '';
     }
 
     /** @param callable(): mixed $operation */

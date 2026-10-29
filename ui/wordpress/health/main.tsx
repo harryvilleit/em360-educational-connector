@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { createRoot } from "react-dom/client"
+import "./frame.css"
 import HealthApp from "../../src/pages/Dashboard/Health/workspace/HealthApp"
 import {
   camel,

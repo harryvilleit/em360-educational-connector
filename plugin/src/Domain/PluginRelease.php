@@ -102,7 +102,7 @@ final class PluginRelease
     /** Signed storage links (for example an Azure SAS URL) carry a query string. */
     private static function isHttpsWithQuery(string $url): bool
     {
-        $parts = parse_url($url);
+        $parts = wp_parse_url($url);
         return is_array($parts) && isset($parts['query']) && !isset($parts['fragment'])
             && UrlPolicy::isHttps(substr($url, 0, (int) strpos($url, '?')));
     }

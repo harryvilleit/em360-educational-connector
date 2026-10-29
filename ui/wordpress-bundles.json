@@ -1552,6 +1552,7 @@
       "src/pages/Dashboard/Health/workspace/HealthApp.tsx",
       "src/pages/Dashboard/Health/workspace/actions.ts",
       "src/pages/Dashboard/Health/workspace/shared.tsx",
+      "wordpress/health/frame.css",
       "wordpress/health/index.html",
       "wordpress/health/main.tsx"
     ]

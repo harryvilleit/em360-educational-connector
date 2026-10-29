@@ -67,7 +67,7 @@ final class UserManagementController
             }
             // AI course drafts can take up to three minutes; keep PHP alive for that single operation.
             if ($data['method'] === 'POST' && preg_match('~^/Training/Courses/[a-fA-F0-9-]{36}/Generate$~D', $data['path']) && function_exists('set_time_limit')) {
-                @set_time_limit(200);
+                @set_time_limit(200); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- only for the AI course-draft operation, which can take up to three minutes.
             }
             foreach ($data['files'] as $file) {
                 if (!is_array($file) || count(array_filter($file, 'is_string')) !== count($file)) {
@@ -90,18 +90,14 @@ final class UserManagementController
     /** The public document contains only the local application shell. API access still requires the bound portal session. */
     public function frame(): void
     {
-        nocache_headers();
-        header('Content-Type: text/html; charset=utf-8');
-        header('Referrer-Policy: no-referrer');
-        header('X-Frame-Options: SAMEORIGIN');
-        header("Content-Security-Policy: frame-ancestors 'self'");
-        $path = isset($_GET['path']) && is_string($_GET['path']) ? wp_unslash($_GET['path']) : '/dashboard/users';
+        $path = $this->query('path') ?: '/dashboard/users';
         if (!preg_match('~^/dashboard(?:/[a-zA-Z0-9_-]+)*/?(?:\?[a-zA-Z0-9_=&%.-]*)?$~iD', trim($path)) || strlen($path) > 500) {
             $path = '/invalid-menu';
         }
-        $menu = isset($_GET['menu']) && is_string($_GET['menu']) ? sanitize_text_field(wp_unslash($_GET['menu'])) : '';
+        $menu = sanitize_text_field($this->query('menu'));
         $modules = ['students', 'parents', 'exams', 'fees', 'elearning', 'timetable', 'attendance', 'hostel', 'staff', 'health', 'training', 'learner-support', 'voting', 'reports', 'safeguarding', 'document-designer'];
-        $module = isset($_GET['module']) && in_array($_GET['module'], $modules, true) ? $_GET['module'] : 'users';
+        $requested = sanitize_key($this->query('module'));
+        $module = in_array($requested, $modules, true) ? $requested : 'users';
         // Hostel, Staff (with availability) and Lesson Notes run in their own build of the staff portal.
         $usesRebuiltPortal = in_array($module, ['hostel', 'staff'], true)
             || ($module === 'elearning' && preg_match('~/elearning/lesson-notes(?:[/?]|$)~', $path) === 1);
@@ -115,21 +111,21 @@ final class UserManagementController
             'document-designer' => 'assets/document-designer-v022/',
             default => 'assets/user-management-v016/',
         };
-        $html = file_get_contents(dirname($this->pluginFile) . '/' . $assetDirectory . 'index.html');
-        if ($html === false) {
-            wp_die(esc_html('The school portal application is missing. Install the complete plugin ZIP.'));
-        }
-        $configuration = wp_json_encode(
-            [
-                'restBase' => rest_url('em360/v1/'), 'initialPath' => trim($path), 'menuId' => $menu,
-                'module' => $module, 'frontendBase' => $this->settings->get()->frontendUrl,
-            ],
-            JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
-        );
-        $runtime = '<base href="' . esc_url(plugins_url($assetDirectory, $this->pluginFile)) . '">' .
-            '<script id="em360-runtime" type="application/json">' . $configuration . '</script>';
-        // The static document is built from the shipped React application; the inserted values are encoded above.
-        echo str_replace('<!-- EM360_RUNTIME -->', $runtime, $html);
-        exit;
+        (new AppFrame($this->pluginFile))->output($assetDirectory, [
+            'restBase' => rest_url('em360/v1/'), 'initialPath' => trim($path), 'menuId' => $menu,
+            'module' => $module, 'frontendBase' => $this->settings->get()->frontendUrl,
+        ]);
+    }
+
+    /**
+     * Reads a parameter of the frame address. The frame is a read-only application shell (no state changes,
+     * so no nonce); every value is validated against an allow-list or pattern before use, and every school
+     * operation is authorised separately by the signed-in session.
+     */
+    private function query(string $name): string
+    {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read-only shell; validated by the caller.
+        $value = isset($_GET[$name]) ? wp_unslash($_GET[$name]) : '';
+        return is_string($value) ? $value : '';
     }
 }

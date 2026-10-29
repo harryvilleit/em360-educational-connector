@@ -30,6 +30,8 @@ const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, value, i, a
   value.startsWith("--") ? [...pairs, [value.slice(2), all[i + 1]?.startsWith("--") || all[i + 1] === undefined ? "true" : all[i + 1]]] : pairs, []))
 const fail = (message) => { console.error("\n✖ " + message); process.exit(1) }
 const wporg = args.wporg === "true"
+// WordPress.org derives the plugin's slug from its name; the folder and text domain must match it.
+const WPORG_SLUG = args.slug ?? "em360-school-connector"
 
 // --- version -------------------------------------------------------------------------------------------------
 const mainFile = join(root, `${SLUG}.php`), readmeFile = join(root, "readme.txt")
@@ -56,7 +58,7 @@ const studentPortalFiles = ["src/Presentation/StudentPortalController.php", "src
 const omitted = (rel) => updaterFiles.includes(rel) || studentPortalFiles.some((f) => (f.endsWith("/") ? rel === f.slice(0, -1) || rel.startsWith(f) : rel === f))
 const updaterClass = /PluginUpdater|PluginRelease|StudentPortalController|Application\\\\StudentPortal'/
 const rewrite = wporg ? {
-  [`${SLUG}.php`]: (text) => text.replace(/^ \* Update URI: .*\r?\n/m, ""),
+  [`${SLUG}.php`]: (text) => text.replace(/^ \* Update URI: .*\r?\n/m, "").replace(/^ \* Text Domain: .*$/m, ` * Text Domain: ${WPORG_SLUG}`),
   "vendor/composer/autoload_classmap.php": (text) => text.split("\n").filter((line) => !updaterClass.test(line)).join("\n"),
   "vendor/composer/autoload_static.php": (text) => text.split("\n").filter((line) => !updaterClass.test(line)).join("\n"),
 } : {}
@@ -86,16 +88,17 @@ if (!wporg) {
 // --- package -------------------------------------------------------------------------------------------------
 const excluded = new Set(["tools", "tests", "node_modules", ".git", ".github", ".idea", ".vscode", "dist", ".phpunit.cache"])
 const files = []
+const folder = wporg ? WPORG_SLUG : SLUG
 const walk = (dir) => {
   for (const name of readdirSync(dir).sort()) {
     const full = join(dir, name), rel = relative(root, full).split(sep).join("/")
     if (excluded.has(rel.split("/")[0]) || name === ".DS_Store" || name === "Thumbs.db" || name.endsWith(".pem")) continue
     if (wporg && omitted(rel)) continue
     const info = statSync(full)
-    if (info.isDirectory()) { files.push({ name: `${SLUG}/${rel}/`, info }); walk(full) } else files.push({ name: `${SLUG}/${rel}`, info, full, rel })
+    if (info.isDirectory()) { files.push({ name: `${folder}/${rel}/`, info }); walk(full) } else files.push({ name: `${folder}/${rel}`, info, full, rel })
   }
 }
-files.push({ name: `${SLUG}/`, info: statSync(root) })
+files.push({ name: `${folder}/`, info: statSync(root) })
 walk(root)
 
 const crcTable = Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0 })
@@ -129,7 +132,7 @@ const zip = Buffer.concat([...chunks, directory, end])
 
 const out = resolve(args.out ?? join(root, "..", "dist"))
 mkdirSync(out, { recursive: true })
-const zipName = `${SLUG}-${version}${wporg ? "-wordpress-org" : ""}.zip`, zipPath = join(out, zipName)
+const zipName = wporg ? `${WPORG_SLUG}-${version}-wordpress-org.zip` : `${SLUG}-${version}.zip`, zipPath = join(out, zipName)
 writeFileSync(zipPath, zip)
 if (wporg) {
   const leftover = files.filter((f) => f.full && f.rel.endsWith(".php")).find((f) => {

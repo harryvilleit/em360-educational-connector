@@ -99,7 +99,7 @@ final class Em360ApiClient implements ConnectionGatewayInterface, AuthorizationG
         if (!UrlPolicy::isHttps($base)) {
             throw new ConnectorException('Set the HTTPS EM360 School API address in WordPress → EM360.', 503, 'em360_config');
         }
-        $json = $body === null ? null : json_encode($body);
+        $json = $body === null ? null : wp_json_encode($body);
         if ($json === false) {
             throw new ConnectorException('The API request could not be encoded.', 500);
         }
@@ -114,7 +114,8 @@ final class Em360ApiClient implements ConnectionGatewayInterface, AuthorizationG
             $data = is_array($decoded) ? $decoded : [];
             $message = RecordCodec::text($data, 'message') ?: RecordCodec::text($data, 'Message') ?: RecordCodec::text($data, 'title');
             $status = $response->status >= 400 && $response->status <= 599 ? $response->status : 502;
-            throw new ConnectorException($message ?: 'The EM360 request could not be completed.', $status, 'em360_api');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plain API text returned as JSON; escaped wherever it is printed.
+            throw ConnectorException::fromApi($message ?: 'The EM360 request could not be completed.', $status, 'em360_api');
         }
         if ($response->status === 204 || ($response->body === '' && in_array($path, ['disconnect', 'portal/logout'], true))) {
             return [];

@@ -72,28 +72,12 @@ final class StudentPortalController
     /** The public document contains only the local application shell. Every operation still needs a student session. */
     public function frame(): void
     {
-        nocache_headers();
-        header('Content-Type: text/html; charset=utf-8');
-        header('Referrer-Policy: no-referrer');
-        header('X-Frame-Options: SAMEORIGIN');
-        header("Content-Security-Policy: frame-ancestors 'self'");
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read-only shell; checked against the screen allow-list below.
         $requested = isset($_GET['path']) && is_string($_GET['path']) ? trim(wp_unslash($_GET['path']), "/ \t") : '';
         $path = in_array($requested, self::SCREENS, true) ? $requested : '';
-        $html = file_get_contents(dirname($this->pluginFile) . '/' . self::ASSETS . 'index.html');
-        if ($html === false) {
-            wp_die(esc_html('The student portal application is missing. Install the complete plugin ZIP.'));
-        }
-        $configuration = wp_json_encode(
-            [
-                'restBase' => rest_url('em360/v1/'), 'initialPath' => $path,
-                'module' => 'student-portal', 'frontendBase' => $this->settings->get()->frontendUrl,
-            ],
-            JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
-        );
-        $runtime = '<base href="' . esc_url(plugins_url(self::ASSETS, $this->pluginFile)) . '">' .
-            '<script id="em360-runtime" type="application/json">' . $configuration . '</script>';
-        // The static document is built from the shipped React application; the inserted values are encoded above.
-        echo str_replace('<!-- EM360_RUNTIME -->', $runtime, $html);
-        exit;
+        (new AppFrame($this->pluginFile))->output(self::ASSETS, [
+            'restBase' => rest_url('em360/v1/'), 'initialPath' => $path,
+            'module' => 'student-portal', 'frontendBase' => $this->settings->get()->frontendUrl,
+        ]);
     }
 }

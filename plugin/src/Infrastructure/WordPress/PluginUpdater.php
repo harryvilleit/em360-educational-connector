@@ -48,7 +48,8 @@ final class PluginUpdater
         if ($pluginFile !== $this->basename()) {
             return $update;
         }
-        $release = $this->release(!empty($_GET['force-check']));
+        // Dashboard › Updates › "Check again" adds force-check; it only bypasses the cached release check.
+        $release = $this->release(!empty($_GET['force-check'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if ($release === null) {
             return $update;
         }
@@ -185,7 +186,7 @@ final class PluginUpdater
     private function publicKey(): string
     {
         $file = dirname($this->pluginFile) . '/resources/release-public-key.txt';
-        return is_readable($file) ? trim((string) file_get_contents($file)) : '';
+        return is_readable($file) ? trim((string) file_get_contents($file)) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local plugin file
     }
 
     private function basename(): string

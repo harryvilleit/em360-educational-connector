@@ -16,7 +16,7 @@ final class RequestGuard
 
     public function sameOrigin(): bool|\WP_Error
     {
-        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        $origin = isset($_SERVER['HTTP_ORIGIN']) ? esc_url_raw(wp_unslash($_SERVER['HTTP_ORIGIN'])) : '';
         $expected = UrlPolicy::origin($this->website->get()->siteUrl);
         if (!is_string($origin) || ($origin !== '' && ($expected === '' || UrlPolicy::origin($origin) !== $expected))) {
             return new \WP_Error('em360_origin', 'Cross-site requests are not allowed.', ['status' => 403]);
