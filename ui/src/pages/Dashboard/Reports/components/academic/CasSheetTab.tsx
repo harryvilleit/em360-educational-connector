@@ -41,11 +41,7 @@ export function CasSheetTab({
             render: (_r: CasRow, i: number) => i + 1,
           },
           { key: "n", header: "Student name", render: (r) => r.name },
-          {
-            key: "a",
-            header: "Admission no.",
-            render: (r) => r.admissionNumber,
-          },
+          { key: "a", header: "Admission no.", render: (r) => r.admissionNumber },
           { key: "g", header: "Gender", render: (r) => r.gender },
           ...(sheet?.columns ?? []).map((c) => ({
             key: c.key,

@@ -6,14 +6,21 @@ namespace EM360\SchoolConnector\Presentation;
 
 final class PortalShortcode
 {
-    public function __construct(private readonly TemplateRenderer $views, private readonly string $pluginFile, private readonly string $version)
-    {
+    public function __construct(
+        private readonly TemplateRenderer $views,
+        private readonly string $pluginFile,
+        private readonly string $version,
+        /** False in the WordPress.org build, which has no student portal. */
+        private readonly bool $studentPortal = true,
+    ) {
     }
 
     public function register(): void
     {
         add_shortcode('em360_school_portal', [$this, 'render']);
-        add_shortcode('em360_student_portal', [$this, 'renderStudent']);
+        if ($this->studentPortal) {
+            add_shortcode('em360_student_portal', [$this, 'renderStudent']);
+        }
         add_action('template_redirect', [$this, 'preventPageCache']);
         add_action('wp_enqueue_scripts', [$this, 'enqueueForPage']);
     }
@@ -45,7 +52,7 @@ final class PortalShortcode
             if (has_shortcode($post->post_content, 'em360_school_portal')) {
                 $this->enqueueAssets();
             }
-            if (has_shortcode($post->post_content, 'em360_student_portal')) {
+            if ($this->studentPortal && has_shortcode($post->post_content, 'em360_student_portal')) {
                 $this->enqueueStudentAssets();
             }
         }

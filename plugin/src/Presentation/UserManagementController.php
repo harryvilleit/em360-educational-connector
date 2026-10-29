@@ -102,7 +102,10 @@ final class UserManagementController
         $menu = isset($_GET['menu']) && is_string($_GET['menu']) ? sanitize_text_field(wp_unslash($_GET['menu'])) : '';
         $modules = ['students', 'parents', 'exams', 'fees', 'elearning', 'timetable', 'attendance', 'hostel', 'staff', 'health', 'training', 'learner-support', 'voting', 'reports', 'safeguarding', 'document-designer'];
         $module = isset($_GET['module']) && in_array($_GET['module'], $modules, true) ? $_GET['module'] : 'users';
-        $assetDirectory = match ($module) {
+        // Hostel, Staff (with availability) and Lesson Notes run in their own build of the staff portal.
+        $usesRebuiltPortal = in_array($module, ['hostel', 'staff'], true)
+            || ($module === 'elearning' && preg_match('~/elearning/lesson-notes(?:[/?]|$)~', $path) === 1);
+        $assetDirectory = $usesRebuiltPortal ? 'assets/rebuilt-v0172/' : match ($module) {
             'health' => 'assets/health-v017/',
             'training' => 'assets/training-v018/',
             'learner-support' => 'assets/learner-support-v019/',

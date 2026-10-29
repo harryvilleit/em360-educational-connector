@@ -53,22 +53,20 @@ export function EnrolmentReport({
             empty="No pupils on roll yet."
             searchBy={(r) => r.className}
             searchPlaceholder="Search class"
-            filters={[
-              {
-                placeholder: "Gender balance",
-                options: [
-                  { value: "girls", label: "More girls than boys" },
-                  { value: "boys", label: "More boys than girls" },
-                  { value: "equal", label: "Equal" },
-                ],
-                matches: (r, v) =>
-                  v === "girls"
-                    ? r.girls > r.boys
-                    : v === "boys"
-                      ? r.boys > r.girls
-                      : r.boys === r.girls,
-              },
-            ]}
+            filters={[{
+              placeholder: "Gender balance",
+              options: [
+                { value: "girls", label: "More girls than boys" },
+                { value: "boys", label: "More boys than girls" },
+                { value: "equal", label: "Equal" },
+              ],
+              matches: (r, v) =>
+                v === "girls"
+                  ? r.girls > r.boys
+                  : v === "boys"
+                    ? r.boys > r.girls
+                    : r.boys === r.girls,
+            }]}
             footer={
               e && `Grand total: ${e.boys} boys + ${e.girls} girls = ${e.total}`
             }
@@ -93,18 +91,16 @@ export function EnrolmentReport({
             empty="No dates of birth recorded."
             searchBy={(r) => r.band}
             searchPlaceholder="Search age band"
-            filters={[
-              {
-                placeholder: "Share of pupils",
-                options: [
-                  { value: "high", label: "10% and above" },
-                  { value: "low", label: "Below 10%" },
-                ],
-                matches: (r, v) =>
-                  (ageTotal ? r.count / ageTotal >= 0.1 : false) ===
-                  (v === "high"),
-              },
-            ]}
+            filters={[{
+              placeholder: "Share of pupils",
+              options: [
+                { value: "high", label: "10% and above" },
+                { value: "low", label: "Below 10%" },
+              ],
+              matches: (r, v) =>
+                (ageTotal ? r.count / ageTotal >= 0.1 : false) ===
+                (v === "high"),
+            }]}
           />
         </TabsContent>
 

@@ -31,6 +31,8 @@ final class AdminController
         private readonly ErrorResponder $errors,
         private readonly string $pluginFile,
         private readonly string $version,
+        /** False in the WordPress.org build, which has no student portal. */
+        private readonly bool $studentPortal = true,
     ) {
     }
 
@@ -38,7 +40,11 @@ final class AdminController
     {
         add_action('admin_menu', [$this, 'menu']);
         add_action('admin_enqueue_scripts', [$this, 'assets']);
-        foreach (['save', 'connect', 'register_school', 'disconnect', 'create_page', 'create_student_page'] as $action) {
+        $actions = ['save', 'connect', 'register_school', 'disconnect', 'create_page'];
+        if ($this->studentPortal) {
+            $actions[] = 'create_student_page';
+        }
+        foreach ($actions as $action) {
             $method = match ($action) {
                 'create_page' => 'createPage', 'create_student_page' => 'createStudentPage', 'register_school' => 'registerSchool', default => $action
             };
@@ -74,6 +80,7 @@ final class AdminController
             'pagePublished' => $this->pages->isPublished($config->pageId),
             'studentPortalUrl' => $this->pages->url($config->studentPageId),
             'studentPagePublished' => $this->pages->isPublished($config->studentPageId),
+            'studentPortal' => $this->studentPortal,
         ]);
     }
 

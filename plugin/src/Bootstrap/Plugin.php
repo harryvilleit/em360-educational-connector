@@ -22,8 +22,10 @@ final class Plugin
         private readonly PortalShortcode $shortcode,
         private readonly UserManagementController $userManagement,
         private readonly PortalPageLayout $layout,
-        private readonly PluginUpdater $updater,
-        private readonly StudentPortalController $studentPortal,
+        /** Absent in the WordPress.org build, which is School Management only. */
+        private readonly ?StudentPortalController $studentPortal,
+        /** Absent in the WordPress.org build, which updates through WordPress.org. */
+        private readonly ?PluginUpdater $updater = null,
     ) {
     }
 
@@ -35,7 +37,7 @@ final class Plugin
         $this->shortcode->register();
         $this->userManagement->register();
         $this->layout->register();
-        $this->updater->register();
-        $this->studentPortal->register();
+        $this->updater?->register();
+        $this->studentPortal?->register();
     }
 }

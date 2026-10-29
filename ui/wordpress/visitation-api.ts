@@ -41,10 +41,11 @@ export const visits = (
   pageNumber = 1,
   status?: string,
   visitRequestId?: string,
+  guardianId?: string,
 ) =>
   value<Page<Visit>>(
     api.get("/Visitation/GetRequests", {
-      params: { schoolId, pageNumber, pageSize: 20, status, visitRequestId },
+      params: { schoolId, pageNumber, pageSize: 20, status, visitRequestId, guardianId },
     }),
   )
 export const reviewVisit = (

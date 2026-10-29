@@ -35,23 +35,9 @@ export function EnrolmentByClassChart({ data }: { data: ReportData }) {
       ) : (
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={enrol.byClass} barSize={26}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={GRID}
-              vertical={false}
-            />
-            <XAxis
-              dataKey="className"
-              tick={AXIS}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              tick={AXIS}
-              axisLine={false}
-              tickLine={false}
-              allowDecimals={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+            <XAxis dataKey="className" tick={AXIS} axisLine={false} tickLine={false} />
+            <YAxis tick={AXIS} axisLine={false} tickLine={false} allowDecimals={false} />
             <Tooltip cursor={CURSOR} />
             <Legend
               iconType="circle"

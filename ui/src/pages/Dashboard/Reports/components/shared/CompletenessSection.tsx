@@ -15,16 +15,8 @@ export function CompletenessSection({
       subtitle="How many records have the fields officials ask for"
       columns={[
         { key: "l", header: "Field", render: (r: CompletenessItem) => r.label },
-        {
-          key: "f",
-          header: "Recorded",
-          render: (r: CompletenessItem) => r.filled,
-        },
-        {
-          key: "t",
-          header: "Total records",
-          render: (r: CompletenessItem) => r.total,
-        },
+        { key: "f", header: "Recorded", render: (r: CompletenessItem) => r.filled },
+        { key: "t", header: "Total records", render: (r: CompletenessItem) => r.total },
         {
           key: "p",
           header: "Complete",
@@ -36,16 +28,14 @@ export function CompletenessSection({
       empty="No records yet."
       searchBy={(r) => r.label}
       searchPlaceholder="Search fields"
-      filters={[
-        {
-          placeholder: "Status",
-          options: [
-            { value: "complete", label: "Fully recorded" },
-            { value: "incomplete", label: "Missing some" },
-          ],
-          matches: (r, v) => r.filled >= r.total === (v === "complete"),
-        },
-      ]}
+      filters={[{
+        placeholder: "Status",
+        options: [
+          { value: "complete", label: "Fully recorded" },
+          { value: "incomplete", label: "Missing some" },
+        ],
+        matches: (r, v) => (r.filled >= r.total) === (v === "complete"),
+      }]}
     />
   )
 }

@@ -2,10 +2,12 @@ import path from "node:path"
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
+import { wordpressOverrides } from "./wordpress/build/overrides"
 const root = path.resolve(import.meta.dirname)
 const replacements: Record<string, string> = {
   "src/store/classNotification.store.ts": "wordpress/class-notifications.ts",
-  "src/api/api.ts": "wordpress/api.ts",
+  "src/api/api.ts": "wordpress/portal-api.ts",
+  "src/store/parentPortalFilter.store.ts": "wordpress/parent-filters.ts",
   "src/hooks/useFormDraft.ts": "wordpress/form-draft.ts",
   "src/lib/portal-navigation.ts": "wordpress/portal-navigation.ts",
   "src/lib/chat-attachments.ts": "wordpress/chat-attachments.ts",
@@ -41,6 +43,7 @@ export default defineConfig({
         return null
       },
     },
+    wordpressOverrides(root),
     react(),
     tailwindcss(),
   ],
@@ -52,7 +55,6 @@ export default defineConfig({
   build: {
     outDir: path.join(root, "../plugin/assets/user-management"),
     emptyOutDir: true,
-    manifest: true,
     sourcemap: false,
   },
 })

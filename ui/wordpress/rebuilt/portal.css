@@ -1,0 +1,29 @@
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+body {
+  background: #f8fafc;
+  color: #0f172a;
+}
+#root {
+  padding: clamp(12px, 2vw, 28px);
+}
+button:not(:disabled),
+select {
+  cursor: pointer;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+@media print {
+  #root {
+    padding: 0;
+  }
+}

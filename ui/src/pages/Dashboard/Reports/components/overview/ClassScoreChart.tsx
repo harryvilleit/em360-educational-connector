@@ -27,26 +27,9 @@ export function ClassScoreChart({ data }: { data: ReportData }) {
       ) : (
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={byClass} layout="vertical" margin={{ left: 16 }}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={GRID}
-              horizontal={false}
-            />
-            <XAxis
-              type="number"
-              domain={[0, 100]}
-              tick={AXIS}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              type="category"
-              dataKey="className"
-              tick={AXIS}
-              axisLine={false}
-              tickLine={false}
-              width={72}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
+            <XAxis type="number" domain={[0, 100]} tick={AXIS} axisLine={false} tickLine={false} />
+            <YAxis type="category" dataKey="className" tick={AXIS} axisLine={false} tickLine={false} width={72} />
             <Tooltip cursor={CURSOR} />
             <Bar
               dataKey="avgScore"

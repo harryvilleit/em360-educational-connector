@@ -9,6 +9,14 @@
 // 4. Prints the "WordPressPluginRelease" settings for the School API. Upload the ZIP to the package URL,
 //    apply the settings, and every connected website offers "Update now" (or updates itself if the
 //    administrator enabled auto-updates for the plugin).
+//
+//   node tools/release.mjs --version 0.25.0 --wporg
+//
+// Builds the WordPress.org directory package instead: the same plugin without the self-updater (no Update URI
+// header, no PluginUpdater/PluginRelease classes, no release key), because directory plugins update only through
+// WordPress.org. It is not signed and needs no key. Both packages come from the same source and version.
+// The directory build is School Management only: it also leaves out the student sign-in portal
+// ([em360_student_portal]), which stays in the self-hosted package.
 import { createHash, createPrivateKey, createPublicKey, generateKeyPairSync, sign } from "node:crypto"
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs"
 import { homedir } from "node:os"
@@ -21,6 +29,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, value, i, all) =>
   value.startsWith("--") ? [...pairs, [value.slice(2), all[i + 1]?.startsWith("--") || all[i + 1] === undefined ? "true" : all[i + 1]]] : pairs, []))
 const fail = (message) => { console.error("\n✖ " + message); process.exit(1) }
+const wporg = args.wporg === "true"
 
 // --- version -------------------------------------------------------------------------------------------------
 const mainFile = join(root, `${SLUG}.php`), readmeFile = join(root, "readme.txt")
@@ -39,24 +48,40 @@ const escaped = version.replace(/\./g, "\\.")
 const changelog = args.changelog ?? readme.match(new RegExp(`^= ${escaped} =\\r?\\n([\\s\\S]*?)(?=^= |^== |(?![\\s\\S]))`, "m"))?.[1].trim() ?? ""
 if (!changelog) console.warn(`! readme.txt has no "= ${version} =" changelog entry; WordPress will show none.`)
 
+// --- WordPress.org package ------------------------------------------------------------------------------------
+// Files left out, and files rewritten on the way into the ZIP (the working copy is never changed).
+const updaterFiles = ["src/Infrastructure/WordPress/PluginUpdater.php", "src/Domain/PluginRelease.php", "resources/release-public-key.txt"]
+const studentPortalFiles = ["src/Presentation/StudentPortalController.php", "src/Application/StudentPortal.php", "templates/student-portal.php",
+  "assets/student-portal.js", "resources/student-portal-routes.json", "assets/student-portal-v024/"]
+const omitted = (rel) => updaterFiles.includes(rel) || studentPortalFiles.some((f) => (f.endsWith("/") ? rel === f.slice(0, -1) || rel.startsWith(f) : rel === f))
+const updaterClass = /PluginUpdater|PluginRelease|StudentPortalController|Application\\\\StudentPortal'/
+const rewrite = wporg ? {
+  [`${SLUG}.php`]: (text) => text.replace(/^ \* Update URI: .*\r?\n/m, ""),
+  "vendor/composer/autoload_classmap.php": (text) => text.split("\n").filter((line) => !updaterClass.test(line)).join("\n"),
+  "vendor/composer/autoload_static.php": (text) => text.split("\n").filter((line) => !updaterClass.test(line)).join("\n"),
+} : {}
+
 // --- signing key ---------------------------------------------------------------------------------------------
-const keyFile = resolve(args.key ?? process.env.EM360_RELEASE_KEY ?? join(homedir(), ".em360", `${SLUG}-release-key.pem`))
-if (!existsSync(keyFile)) {
-  const { privateKey } = generateKeyPairSync("ed25519")
-  mkdirSync(dirname(keyFile), { recursive: true })
-  writeFileSync(keyFile, privateKey.export({ format: "pem", type: "pkcs8" }), { mode: 0o600 })
-  console.log(`✔ Created the release signing key at ${keyFile}\n  Back it up somewhere safe. Websites only accept packages signed with this key.`)
+let signingKey = null
+if (!wporg) {
+  const keyFile = resolve(args.key ?? process.env.EM360_RELEASE_KEY ?? join(homedir(), ".em360", `${SLUG}-release-key.pem`))
+  if (!existsSync(keyFile)) {
+    const { privateKey } = generateKeyPairSync("ed25519")
+    mkdirSync(dirname(keyFile), { recursive: true })
+    writeFileSync(keyFile, privateKey.export({ format: "pem", type: "pkcs8" }), { mode: 0o600 })
+    console.log(`✔ Created the release signing key at ${keyFile}\n  Back it up somewhere safe. Websites only accept packages signed with this key.`)
+  }
+  const privateKey = createPrivateKey(readFileSync(keyFile))
+  if (privateKey.asymmetricKeyType !== "ed25519") fail(`${keyFile} is not an Ed25519 private key.`)
+  const publicKey = createPublicKey(privateKey).export({ format: "der", type: "spki" }).subarray(-32).toString("base64")
+  const publicFile = join(root, "resources", "release-public-key.txt")
+  const shipped = existsSync(publicFile) ? readFileSync(publicFile, "utf8").trim() : ""
+  if (shipped && shipped !== publicKey && args["rotate-key"] !== "true")
+    fail("resources/release-public-key.txt holds a different key. Installed websites only trust that key: sign with it (--key), or pass --rotate-key with the OLD key's --sign-with to move to this one.")
+  writeFileSync(publicFile, publicKey + "\n")
+  // When rotating, the package carries the new public key but must be signed with the key the websites trust today.
+  signingKey = args["sign-with"] ? createPrivateKey(readFileSync(resolve(args["sign-with"]))) : privateKey
 }
-const privateKey = createPrivateKey(readFileSync(keyFile))
-if (privateKey.asymmetricKeyType !== "ed25519") fail(`${keyFile} is not an Ed25519 private key.`)
-const publicKey = createPublicKey(privateKey).export({ format: "der", type: "spki" }).subarray(-32).toString("base64")
-const publicFile = join(root, "resources", "release-public-key.txt")
-const shipped = existsSync(publicFile) ? readFileSync(publicFile, "utf8").trim() : ""
-if (shipped && shipped !== publicKey && args["rotate-key"] !== "true")
-  fail("resources/release-public-key.txt holds a different key. Installed websites only trust that key: sign with it (--key), or pass --rotate-key with the OLD key's --sign-with to move to this one.")
-writeFileSync(publicFile, publicKey + "\n")
-// When rotating, the package carries the new public key but must be signed with the key the websites trust today.
-const signingKey = args["sign-with"] ? createPrivateKey(readFileSync(resolve(args["sign-with"]))) : privateKey
 
 // --- package -------------------------------------------------------------------------------------------------
 const excluded = new Set(["tools", "tests", "node_modules", ".git", ".github", ".idea", ".vscode", "dist", ".phpunit.cache"])
@@ -65,8 +90,9 @@ const walk = (dir) => {
   for (const name of readdirSync(dir).sort()) {
     const full = join(dir, name), rel = relative(root, full).split(sep).join("/")
     if (excluded.has(rel.split("/")[0]) || name === ".DS_Store" || name === "Thumbs.db" || name.endsWith(".pem")) continue
+    if (wporg && omitted(rel)) continue
     const info = statSync(full)
-    if (info.isDirectory()) { files.push({ name: `${SLUG}/${rel}/`, info }); walk(full) } else files.push({ name: `${SLUG}/${rel}`, info, full })
+    if (info.isDirectory()) { files.push({ name: `${SLUG}/${rel}/`, info }); walk(full) } else files.push({ name: `${SLUG}/${rel}`, info, full, rel })
   }
 }
 files.push({ name: `${SLUG}/`, info: statSync(root) })
@@ -79,7 +105,8 @@ const dosTime = (d) => [((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSe
 const chunks = [], central = []
 let offset = 0
 for (const entry of files) {
-  const name = Buffer.from(entry.name, "utf8"), raw = entry.full ? readFileSync(entry.full) : Buffer.alloc(0)
+  const name = Buffer.from(entry.name, "utf8")
+  const raw = !entry.full ? Buffer.alloc(0) : rewrite[entry.rel] ? Buffer.from(rewrite[entry.rel](readFileSync(entry.full, "utf8")), "utf8") : readFileSync(entry.full)
   const packed = entry.full ? deflateRawSync(raw, { level: 9 }) : raw, method = entry.full ? 8 : 0
   const crc = crc32(raw), [time, date] = dosTime(entry.info.mtime)
   const local = Buffer.alloc(30)
@@ -102,8 +129,25 @@ const zip = Buffer.concat([...chunks, directory, end])
 
 const out = resolve(args.out ?? join(root, "..", "dist"))
 mkdirSync(out, { recursive: true })
-const zipName = `${SLUG}-${version}.zip`, zipPath = join(out, zipName)
+const zipName = `${SLUG}-${version}${wporg ? "-wordpress-org" : ""}.zip`, zipPath = join(out, zipName)
 writeFileSync(zipPath, zip)
+if (wporg) {
+  const leftover = files.filter((f) => f.full && f.rel.endsWith(".php")).find((f) => {
+    const text = rewrite[f.rel] ? rewrite[f.rel](readFileSync(f.full, "utf8")) : readFileSync(f.full, "utf8")
+    return /^\s*\*\s*Update URI:/m.test(text) || /update_plugins_|upgrader_pre_download|plugins_api/.test(text)
+  })
+  if (leftover) fail(`${leftover.rel} still contains self-update code; WordPress.org will reject the package.`)
+  const studentLeft = files.find((f) => f.full && /student-portal/.test(f.rel))
+  if (studentLeft) fail(`${studentLeft.rel} belongs to the student portal, which the WordPress.org build leaves out.`)
+  console.log(`
+✔ Built ${zipPath}
+  ${files.filter((f) => f.full).length} files · ${(zip.length / 1048576).toFixed(1)} MB · WordPress.org build (no self-updater)
+
+Next: upload it at https://wordpress.org/plugins/developers/add/ (first submission), or after approval commit
+its contents to the plugin's SVN trunk and tag ${version}.
+`)
+  process.exit(0)
+}
 const sha256 = createHash("sha256").update(zip).digest("hex")
 const signature = sign(null, Buffer.from(`${SLUG}\n${version}\n${sha256}`, "utf8"), signingKey).toString("base64")
 

@@ -65,6 +65,26 @@ final class PluginFactory
         $notices = new AdminNotices();
         $navigation = new Navigation($notices, $settings, $pages);
         $errors = new ErrorResponder();
+        // The WordPress.org build is School Management only and ships without the student portal.
+        $studentPortal = class_exists(StudentPortalController::class)
+            ? new StudentPortalController(
+                new StudentPortal(
+                    new UserManagementApi(new WordPressHttpClient(), $settings, json_decode(
+                        (string) file_get_contents(dirname($pluginFile) . '/resources/student-portal-routes.json'),
+                        true,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    ), 'student-portal'),
+                    $sessions,
+                    $connections,
+                    $clock,
+                ),
+                new RequestGuard($sessions, $website),
+                $errors,
+                $pluginFile,
+                $settings,
+            )
+            : null;
 
         return new Plugin(
             new AdminController(
@@ -82,6 +102,7 @@ final class PluginFactory
                 $errors,
                 $pluginFile,
                 $version,
+                $studentPortal !== null,
             ),
             new CallbackController($complete, $navigation, $errors),
             new PortalRestController(
@@ -92,7 +113,7 @@ final class PluginFactory
                 new RequestGuard($sessions, $website),
                 $errors,
             ),
-            new PortalShortcode($views, $pluginFile, $version),
+            new PortalShortcode($views, $pluginFile, $version, $studentPortal !== null),
             new UserManagementController(
                 new UserManagement(
                     new UserManagementApi(new WordPressHttpClient(), $settings, json_decode(
@@ -111,24 +132,9 @@ final class PluginFactory
                 $settings,
             ),
             new PortalPageLayout(dirname($pluginFile) . '/templates/workspace.php'),
-            new PluginUpdater($settings, $pluginFile, $version),
-            new StudentPortalController(
-                new StudentPortal(
-                    new UserManagementApi(new WordPressHttpClient(), $settings, json_decode(
-                        (string) file_get_contents(dirname($pluginFile) . '/resources/student-portal-routes.json'),
-                        true,
-                        512,
-                        JSON_THROW_ON_ERROR
-                    ), 'student-portal'),
-                    $sessions,
-                    $connections,
-                    $clock,
-                ),
-                new RequestGuard($sessions, $website),
-                $errors,
-                $pluginFile,
-                $settings,
-            ),
+            $studentPortal,
+            // The WordPress.org build ships without the self-updater and updates through WordPress.org.
+            class_exists(PluginUpdater::class) ? new PluginUpdater($settings, $pluginFile, $version) : null,
         );
     }
 }

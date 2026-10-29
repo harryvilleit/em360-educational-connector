@@ -2,6 +2,7 @@ import path from "node:path"
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
+import { wordpressOverrides } from "./wordpress/build/overrides"
 
 // Builds a standalone WordPress module frame from the original React pages.
 // Usage: vite build --config vite.wordpress-module.config.ts --mode training|learner-support
@@ -65,6 +66,7 @@ export default defineConfig(({ mode: moduleName }) => {
           return null
         },
       },
+      wordpressOverrides(root),
       react(),
       tailwindcss(),
     ],

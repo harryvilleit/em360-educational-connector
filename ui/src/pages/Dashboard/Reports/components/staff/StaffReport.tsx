@@ -28,45 +28,17 @@ function staffColumns(
     { key: "n", header: "S/N", render: (r) => serial.get(r.id) ?? "" },
     { key: "name", header: "Name", render: (r) => r.name },
     { key: "sex", header: "Sex", render: (r) => r.sex || NOT_RECORDED },
-    {
-      key: "dob",
-      header: "Date of birth",
-      render: (r) => (r.dob ? formatDate(r.dob, "short") : NOT_RECORDED),
-    },
-    {
-      key: "q",
-      header: "Qualification",
-      render: (r) => r.qualification || NOT_RECORDED,
-    },
+    { key: "dob", header: "Date of birth", render: (r) => (r.dob ? formatDate(r.dob, "short") : NOT_RECORDED) },
+    { key: "q", header: "Qualification", render: (r) => r.qualification || NOT_RECORDED },
     { key: "role", header: "Role", render: (r) => r.role },
     { key: "cat", header: "Category", render: (r) => r.category },
     { key: "st", header: "Status", render: (r) => r.status },
-    {
-      key: "sb",
-      header: "SB number",
-      render: (r) => r.serviceNumber || NOT_RECORDED,
-    },
-    {
-      key: "gl",
-      header: "GL / Step",
-      render: (r) => r.gradeLevel || NOT_RECORDED,
-    },
-    {
-      key: "fa",
-      header: "First appointment",
-      render: (r) => date(r.firstAppointment),
-    },
-    {
-      key: "pa",
-      header: "Present appointment",
-      render: (r) => date(r.presentAppointment),
-    },
+    { key: "sb", header: "SB number", render: (r) => r.serviceNumber || NOT_RECORDED },
+    { key: "gl", header: "GL / Step", render: (r) => r.gradeLevel || NOT_RECORDED },
+    { key: "fa", header: "First appointment", render: (r) => date(r.firstAppointment) },
+    { key: "pa", header: "Present appointment", render: (r) => date(r.presentAppointment) },
     { key: "dp", header: "Date posted", render: (r) => date(r.datePosted) },
-    {
-      key: "or",
-      header: "State / LGA",
-      render: (r) => r.origin || NOT_RECORDED,
-    },
+    { key: "or", header: "State / LGA", render: (r) => r.origin || NOT_RECORDED },
     { key: "tw", header: "Town", render: (r) => r.town || NOT_RECORDED },
   ]
 }
