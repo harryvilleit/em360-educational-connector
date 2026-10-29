@@ -4,7 +4,7 @@ Tags: school management, education, school, staff portal, learning
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.26.1
+Stable tag: 0.26.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,9 @@ No. Exclude the portal pages, the plugin's REST routes and the sign-in callback 
 Disconnect the website first. Uninstalling removes the plugin's settings from WordPress. School records in EM360 and the pages the plugin created are kept.
 
 == Changelog ==
+
+= 0.26.2 =
+Portal screens load their script and styles through the WordPress script-module and style queues.
 
 = 0.26.1 =
 WordPress coding-standards pass for the plugin directory: portal frames are written by an escaped template, request values are unslashed and sanitised, the EM360 sign-in redirect uses wp_safe_redirect, and catalogue files load with wp_json_file_decode. No behaviour change.
@@ -202,6 +205,9 @@ Rebuilt PHP using typed domain models, focused application services, narrow inte
 Initial school-connector foundation: setup, approval, school-scoped sign-in, read-only dashboard and website revocation.
 
 == Upgrade Notice ==
+
+= 0.26.2 =
+Coding-standards fix. No settings change.
 
 = 0.26.1 =
 Coding-standards fixes. No settings change.

@@ -31,7 +31,7 @@ const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, value, i, a
 const fail = (message) => { console.error("\n✖ " + message); process.exit(1) }
 const wporg = args.wporg === "true"
 // WordPress.org derives the plugin's slug from its name; the folder and text domain must match it.
-const WPORG_SLUG = args.slug ?? "em360-school-connector"
+const WPORG_SLUG = args.slug ?? "em360-educational-management"
 
 // --- version -------------------------------------------------------------------------------------------------
 const mainFile = join(root, `${SLUG}.php`), readmeFile = join(root, "readme.txt")

@@ -27,20 +27,26 @@ final class AppFrame
         $index = dirname($this->pluginFile) . '/' . $assetDirectory . 'index.html';
         // A file shipped inside this plugin, not a remote URL.
         $html = is_readable($index) ? file_get_contents($index) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-        if ($html === false || !preg_match('~<script type="module" crossorigin src="\./(assets/[A-Za-z0-9_.-]+\.js)"~', $html, $script)) {
+        // Only the built file names are taken from index.html.
+        if ($html === false || !preg_match('~ src="\./(assets/[A-Za-z0-9_.-]+\.js)"~', $html, $script)) {
             wp_die(esc_html('The school portal application is missing. Install the complete plugin ZIP.'));
         }
-        preg_match_all('~<link rel="stylesheet" crossorigin href="\./(assets/[A-Za-z0-9_.-]+\.css)"~', $html, $styles);
-        preg_match_all('~<link rel="modulepreload" crossorigin href="\./(assets/[A-Za-z0-9_.-]+\.js)"~', $html, $preloads);
+        preg_match_all('~ href="\./(assets/[A-Za-z0-9_.-]+\.css)"~', $html, $styles);
         $title = preg_match('~<title>([^<]*)</title>~', $html, $match) ? html_entity_decode($match[1], ENT_QUOTES | ENT_HTML5) : 'EM360';
         $base = plugins_url($assetDirectory, $this->pluginFile);
+        // The application and its styles go through the WordPress script-module and style queues.
+        $version = defined('EM360_CONNECTOR_VERSION') ? (string) EM360_CONNECTOR_VERSION : false;
+        wp_enqueue_script_module('em360-frame', $base . $script[1], [], $version);
+        $handles = [];
+        foreach ($styles[1] as $i => $file) {
+            $handles[] = $handle = 'em360-frame-' . $i;
+            wp_enqueue_style($handle, $base . $file, [], $version);
+        }
         $frame = [
             'title' => $title,
             'base' => $base,
             'configuration' => (string) wp_json_encode($configuration, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-            'script' => $base . $script[1],
-            'styles' => array_map(fn (string $file): string => $base . $file, $styles[1]),
-            'preloads' => array_map(fn (string $file): string => $base . $file, $preloads[1]),
+            'styles' => $handles,
         ];
         require dirname($this->pluginFile) . '/templates/frame.php';
         exit;
