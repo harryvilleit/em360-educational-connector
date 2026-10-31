@@ -228,11 +228,19 @@ final class PluginUpdater
         return new PluginReadme(dirname($this->pluginFile) . '/readme.txt');
     }
 
-    /** The newer of the release's "tested up to" and the bundled readme's. */
+    /**
+     * The newer of the release's "tested up to" and the bundled readme's. Like WordPress.org, "7.1" means
+     * every 7.1.x release: WordPress compares the full version, so 7.1 alone would warn on 7.1.4.
+     */
     private function tested(PluginRelease $release): string
     {
         $readme = $this->readme()->tested();
-        return version_compare($readme, $release->tested, '>') ? $readme : $release->tested;
+        $tested = version_compare($readme, $release->tested, '>') ? $readme : $release->tested;
+        $site = (string) get_bloginfo('version');
+        if (preg_match('/^\d+\.\d+$/D', $tested) && str_starts_with($site, $tested . '.')) {
+            return (string) preg_replace('/[^0-9.].*$/', '', $site);
+        }
+        return $tested;
     }
 
     /** @return array<string, string> */
