@@ -79,6 +79,7 @@ class ComposerStaticInit7496f30c5d9ebedbd85962d69e2ac2ba
         'EM360\\SchoolConnector\\Infrastructure\\WordPress\\EncryptedTransientStore' => __DIR__ . '/../..' . '/src/Infrastructure/WordPress/EncryptedTransientStore.php',
         'EM360\\SchoolConnector\\Infrastructure\\WordPress\\OptionConnectionStore' => __DIR__ . '/../..' . '/src/Infrastructure/WordPress/OptionConnectionStore.php',
         'EM360\\SchoolConnector\\Infrastructure\\WordPress\\OptionSettingsStore' => __DIR__ . '/../..' . '/src/Infrastructure/WordPress/OptionSettingsStore.php',
+        'EM360\\SchoolConnector\\Infrastructure\\WordPress\\PluginReadme' => __DIR__ . '/../..' . '/src/Infrastructure/WordPress/PluginReadme.php',
         'EM360\\SchoolConnector\\Infrastructure\\WordPress\\PluginUpdater' => __DIR__ . '/../..' . '/src/Infrastructure/WordPress/PluginUpdater.php',
         'EM360\\SchoolConnector\\Infrastructure\\WordPress\\SecureCookieJar' => __DIR__ . '/../..' . '/src/Infrastructure/WordPress/SecureCookieJar.php',
         'EM360\\SchoolConnector\\Infrastructure\\WordPress\\WordPressHttpClient' => __DIR__ . '/../..' . '/src/Infrastructure/WordPress/WordPressHttpClient.php',

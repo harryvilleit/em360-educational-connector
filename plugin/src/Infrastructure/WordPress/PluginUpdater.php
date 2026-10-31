@@ -19,6 +19,7 @@ final class PluginUpdater
     /** Must match the host in the plugin header's "Update URI". */
     public const UPDATE_HOST = 'em360s.com';
     private const CACHE = 'em360_connector_release';
+    private const HOMEPAGE = 'https://em360s.com';
 
     public function __construct(
         private readonly SettingsStoreInterface $settings,
@@ -35,6 +36,7 @@ final class PluginUpdater
         add_filter('update_plugins_' . self::UPDATE_HOST, [$this, 'offer'], 10, 3);
         add_filter('plugins_api', [$this, 'details'], 10, 3);
         add_filter('upgrader_pre_download', [$this, 'download'], 10, 4);
+        add_filter('upgrader_source_selection', [$this, 'keepFolder'], 10, 4);
         add_action('upgrader_process_complete', static fn () => delete_site_transient(self::CACHE));
     }
 
@@ -55,7 +57,7 @@ final class PluginUpdater
         }
         return [
             'id' => $this->basename(),
-            'slug' => PluginRelease::SLUG,
+            'slug' => $this->slug(),
             'plugin' => $this->basename(),
             'version' => $release->version,
             'new_version' => $release->version,
@@ -63,34 +65,37 @@ final class PluginUpdater
             'package' => $release->isNewerThan($this->version) ? $release->package : '',
             'requires' => $release->requires,
             'requires_php' => $release->requiresPhp,
-            'tested' => $release->tested,
-            'icons' => [], 'banners' => [], 'translations' => [],
+            'tested' => $this->tested($release),
+            'icons' => $this->icons(), 'banners' => $this->banners(), 'translations' => [],
         ];
     }
 
     public function details(mixed $result, string $action, object $args): mixed
     {
-        if ($action !== 'plugin_information' || ($args->slug ?? '') !== PluginRelease::SLUG) {
+        if ($action !== 'plugin_information' || ($args->slug ?? '') !== $this->slug()) {
             return $result;
         }
         $release = $this->release(false);
         if ($release === null) {
             return $result;
         }
+        $readme = $this->readme();
         return (object) [
             'name' => 'EM360 School Connector',
-            'slug' => PluginRelease::SLUG,
+            'slug' => $this->slug(),
             'version' => $release->version,
-            'author' => 'HarryVille Solutions Ltd',
-            'homepage' => $this->settings->get()->frontendUrl,
+            'author' => '<a href="' . esc_url(self::HOMEPAGE) . '">HarryVille Solutions Ltd</a>',
+            'author_profile' => self::HOMEPAGE,
+            'homepage' => self::HOMEPAGE,
+            'short_description' => $readme->summary(),
             'requires' => $release->requires,
             'requires_php' => $release->requiresPhp,
-            'tested' => $release->tested,
+            'tested' => $this->tested($release),
             'last_updated' => $release->releasedAt,
             'download_link' => $release->package,
-            'sections' => [
-                'changelog' => $release->changelog !== '' ? wpautop(esc_html($release->changelog)) : '<p>See the readme included with the plugin.</p>',
-            ],
+            'sections' => $readme->sections($release->changelog),
+            'banners' => $this->banners(),
+            'icons' => $this->icons(),
         ];
     }
 
@@ -187,6 +192,65 @@ final class PluginUpdater
     {
         $file = dirname($this->pluginFile) . '/resources/release-public-key.txt';
         return is_readable($file) ? trim((string) file_get_contents($file)) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local plugin file
+    }
+
+    /**
+     * Release packages unpack to "em360-connector/". When this site installed the plugin under another folder
+     * name, the update is unpacked into that same folder, so the plugin stays active and add-ons that
+     * require it keep working.
+     *
+     * @param array<string, mixed> $hookExtra
+     */
+    public function keepFolder(mixed $source, string $remoteSource, object $upgrader, array $hookExtra = []): mixed
+    {
+        if (!is_string($source) || ($hookExtra['plugin'] ?? '') !== $this->basename()) {
+            return $source;
+        }
+        $wanted = trailingslashit(trailingslashit($remoteSource) . $this->slug());
+        if (untrailingslashit($source) === untrailingslashit($wanted)) {
+            return $source;
+        }
+        global $wp_filesystem;
+        if (!$wp_filesystem instanceof \WP_Filesystem_Base || !$wp_filesystem->move(untrailingslashit($source), untrailingslashit($wanted), true)) {
+            return new \WP_Error('em360_release_folder', 'The update could not be unpacked into the plugin folder.');
+        }
+        return $wanted;
+    }
+
+    /** The folder this site installed the plugin in; WordPress identifies the plugin by it. */
+    private function slug(): string
+    {
+        return dirname($this->basename());
+    }
+
+    private function readme(): PluginReadme
+    {
+        return new PluginReadme(dirname($this->pluginFile) . '/readme.txt');
+    }
+
+    /** The newer of the release's "tested up to" and the bundled readme's. */
+    private function tested(PluginRelease $release): string
+    {
+        $readme = $this->readme()->tested();
+        return version_compare($readme, $release->tested, '>') ? $readme : $release->tested;
+    }
+
+    /** @return array<string, string> */
+    private function banners(): array
+    {
+        return [
+            'low' => plugins_url('assets/images/banner-772x250.png', $this->pluginFile),
+            'high' => plugins_url('assets/images/banner-1544x500.png', $this->pluginFile),
+        ];
+    }
+
+    /** @return array<string, string> */
+    private function icons(): array
+    {
+        return [
+            '1x' => plugins_url('assets/images/icon-128x128.png', $this->pluginFile),
+            '2x' => plugins_url('assets/images/icon-256x256.png', $this->pluginFile),
+        ];
     }
 
     private function basename(): string

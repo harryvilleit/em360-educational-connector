@@ -51,9 +51,10 @@ if (!changelog) console.warn(`! readme.txt has no "= ${version} =" changelog ent
 
 // --- WordPress.org package ------------------------------------------------------------------------------------
 // Files left out, and files rewritten on the way into the ZIP (the working copy is never changed).
-const updaterFiles = ["src/Infrastructure/WordPress/PluginUpdater.php", "src/Domain/PluginRelease.php", "resources/release-public-key.txt"]
-const omitted = (rel) => updaterFiles.includes(rel)
-const updaterClass = /PluginUpdater|PluginRelease/
+const updaterFiles = ["src/Infrastructure/WordPress/PluginUpdater.php", "src/Infrastructure/WordPress/PluginReadme.php", "src/Domain/PluginRelease.php", "resources/release-public-key.txt"]
+// The self-updater's "View details" artwork; WordPress.org takes it from the SVN assets folder instead.
+const omitted = (rel) => updaterFiles.includes(rel) || rel === "assets/images" || rel.startsWith("assets/images/")
+const updaterClass = /PluginUpdater|PluginRelease|PluginReadme/
 const rewrite = wporg ? {
   [`${SLUG}.php`]: (text) => text.replace(/^ \* Update URI: .*\r?\n/m, "").replace(/^ \* Text Domain: .*$/m, ` * Text Domain: ${WPORG_SLUG}`),
   "vendor/composer/autoload_classmap.php": (text) => text.split("\n").filter((line) => !updaterClass.test(line)).join("\n"),

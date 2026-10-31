@@ -7,11 +7,16 @@ This repository holds the complete source of the plugin:
 
 | Folder | Contents |
 |---|---|
-| `plugin/` | The WordPress plugin (PHP, templates and the portal page scripts). |
+| `plugin/` | EM360 School Connector, the WordPress plugin (PHP, templates and the portal page scripts). |
+| `student-portal/` | EM360 Student Portal, the add-on plugin that adds the student portal page. |
 | `ui/` | The React screens the plugin runs inside the portal pages, and their build setup. |
 
+Most screens are shared with the EM360 website (`ui/src/`). Where the WordPress portal behaves differently, the
+WordPress version of a file lives at the same path under `ui/wordpress/overrides/` and replaces it in every WordPress
+build (see `ui/wordpress/build/overrides.ts`); other WordPress-only code is in `ui/wordpress/`.
+
 The React bundles in a plugin release are built from `ui/`. `ui/wordpress-bundles.json` lists the source files that
-make up each bundle (644 files in total).
+make up each bundle (1197 files in total).
 
 ## How it works
 
@@ -20,7 +25,8 @@ make up each bundle (644 files in total).
 * The plugin keeps no school records. Each screen calls the EM360 School API through the plugin's gateway, which forwards
   only the operations listed in `plugin/resources/*-routes.json`. The API re-checks every request: staff by their role and
   menu permissions, students against their own records.
-* Staff and student portals are separate pages with separate sessions.
+* Staff and student portals are separate pages with separate sessions. The student portal is the add-on in
+  `student-portal/`; it uses the connector's school connection, sessions and gateway (`plugin/src/Extension/Connector.php`).
 
 ## Build the React bundles
 
@@ -30,12 +36,15 @@ Requires Node.js 20 or later.
 cd ui
 npm ci
 npm run typecheck
-npm run build:wordpress   # writes the bundles into ../plugin/assets/
+npm run build:wordpress   # writes the bundles into ../plugin/assets/ and ../student-portal/assets/
 ```
 
 ## Package a release
 
-From `plugin/`, after building the bundles: `node tools/release.mjs --version <x.y.z>`. See `plugin/readme.txt`.
+After building the bundles:
+
+* EM360 School Connector, from `plugin/`: `node tools/release.mjs --version <x.y.z>` (self-hosted, signed) or add `--wporg` for WordPress.org.
+* EM360 Student Portal, from `student-portal/`: `node tools/package.mjs --version <x.y.z>`.
 
 ## Licence
 

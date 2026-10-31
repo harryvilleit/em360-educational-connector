@@ -91,7 +91,7 @@ Disconnect the website first. Uninstalling removes the plugin's settings from Wo
 == Changelog ==
 
 = 0.27.0 =
-The student portal is now the separate EM360 Student Portal add-on, which builds on this plugin's school connection, sessions and gateway through a small extension API (the `em360_connector_loaded` action). Existing student portal pages keep working once the add-on is installed; until then they show a short notice.
+The student portal is now the separate EM360 Student Portal add-on, which builds on this plugin's school connection, sessions and gateway through a small extension API (the `em360_connector_loaded` action). Existing student portal pages keep working once the add-on is installed; until then they show a short notice. Self-hosted updates: the "View details" window now shows the description, installation steps, FAQ and changelog with the EM360 banner and icon, and updates unpack into the folder the plugin is installed in (for example em360-educational-management), so it stays active.
 
 = 0.26.2 =
 Portal screens load their script and styles through the WordPress script-module and style queues.

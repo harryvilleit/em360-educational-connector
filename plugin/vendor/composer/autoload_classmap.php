@@ -64,6 +64,7 @@ return array(
     'EM360\\SchoolConnector\\Infrastructure\\WordPress\\EncryptedTransientStore' => $baseDir . '/src/Infrastructure/WordPress/EncryptedTransientStore.php',
     'EM360\\SchoolConnector\\Infrastructure\\WordPress\\OptionConnectionStore' => $baseDir . '/src/Infrastructure/WordPress/OptionConnectionStore.php',
     'EM360\\SchoolConnector\\Infrastructure\\WordPress\\OptionSettingsStore' => $baseDir . '/src/Infrastructure/WordPress/OptionSettingsStore.php',
+    'EM360\\SchoolConnector\\Infrastructure\\WordPress\\PluginReadme' => $baseDir . '/src/Infrastructure/WordPress/PluginReadme.php',
     'EM360\\SchoolConnector\\Infrastructure\\WordPress\\PluginUpdater' => $baseDir . '/src/Infrastructure/WordPress/PluginUpdater.php',
     'EM360\\SchoolConnector\\Infrastructure\\WordPress\\SecureCookieJar' => $baseDir . '/src/Infrastructure/WordPress/SecureCookieJar.php',
     'EM360\\SchoolConnector\\Infrastructure\\WordPress\\WordPressHttpClient' => $baseDir . '/src/Infrastructure/WordPress/WordPressHttpClient.php',
