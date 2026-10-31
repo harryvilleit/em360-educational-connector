@@ -40,7 +40,9 @@ final class AppFrame
         $base = plugins_url($assetDirectory, $this->pluginFile);
         // The application and its styles go through the WordPress script-module and style queues.
         $version = defined('EM360_CONNECTOR_VERSION') ? (string) EM360_CONNECTOR_VERSION : false;
-        wp_enqueue_script_module('em360-frame', $base . $script[1], [], $version);
+        // No "?ver=" on the module: its lazily loaded screens import it by its plain file name, and a second URL
+        // would load a second copy of the application (and of React). The built file names already carry a content hash.
+        wp_enqueue_script_module('em360-frame', $base . $script[1], [], null);
         $handles = [];
         foreach ($styles[1] as $i => $file) {
             $handles[] = $handle = 'em360-frame-' . $i;

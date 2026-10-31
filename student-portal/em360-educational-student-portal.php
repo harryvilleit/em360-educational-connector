@@ -2,7 +2,7 @@
 /**
  * Plugin Name: EM360 Student Portal
  * Description: Adds the EM360 student portal to your school website: students sign in with their EM360 account and see their own timetable, results, attendance, e-learning and more.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Requires at least: 6.6
  * Requires PHP: 8.1
  * Requires Plugins: em360-educational-management
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('EM360_STUDENT_PORTAL_VERSION', '1.0.0');
+define('EM360_STUDENT_PORTAL_VERSION', '1.0.1');
 define('EM360_STUDENT_PORTAL_FILE', __FILE__);
 
 spl_autoload_register(static function (string $class): void {

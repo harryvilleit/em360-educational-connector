@@ -38,9 +38,10 @@ final class AdminController
     {
         add_action('admin_menu', [$this, 'menu']);
         add_action('admin_enqueue_scripts', [$this, 'assets']);
-        foreach (['save', 'connect', 'register_school', 'disconnect', 'create_page', 'create_student_page'] as $action) {
+        foreach (['save', 'connect', 'register_school', 'disconnect', 'create_page', 'create_student_page', 'create_parent_page'] as $action) {
             $method = match ($action) {
-                'create_page' => 'createPage', 'create_student_page' => 'createStudentPage', 'register_school' => 'registerSchool', default => $action
+                'create_page' => 'createPage', 'create_student_page' => 'createStudentPage', 'create_parent_page' => 'createParentPage',
+                'register_school' => 'registerSchool', default => $action
             };
             add_action('admin_post_em360_' . $action, [$this, $method]);
         }
@@ -75,6 +76,9 @@ final class AdminController
             'studentPortalUrl' => $this->pages->url($config->studentPageId),
             'studentPagePublished' => $this->pages->isPublished($config->studentPageId),
             'studentPortal' => $this->studentPortal(),
+            'parentPortalUrl' => $this->pages->url($config->parentPageId),
+            'parentPagePublished' => $this->pages->isPublished($config->parentPageId),
+            'parentPortal' => $this->parentPortal(),
         ]);
     }
 
@@ -136,6 +140,24 @@ final class AdminController
             fn () => $this->createPage->execute(sanitize_text_field($this->field('page_title')), PortalAudience::Student),
             'Student portal page ready. Add it to your website navigation for students.',
         );
+    }
+
+    public function createParentPage(): never
+    {
+        $this->guard->requireAction('em360_create_parent_page');
+        if (!$this->parentPortal()) {
+            $this->navigation->admin('Install and activate the EM360 Parent Portal add-on first.');
+        }
+        $this->perform(
+            fn () => $this->createPage->execute(sanitize_text_field($this->field('page_title')), PortalAudience::Parent),
+            'Parent portal page ready. Add it to your website navigation for parents.',
+        );
+    }
+
+    /** The EM360 Parent Portal add-on reports itself through this filter. */
+    private function parentPortal(): bool
+    {
+        return (bool) apply_filters('em360_connector_parent_portal', false);
     }
 
     /** The EM360 Student Portal add-on reports itself through this filter. */

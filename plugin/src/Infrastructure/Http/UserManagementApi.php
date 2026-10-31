@@ -19,17 +19,17 @@ final class UserManagementApi implements UserManagementGatewayInterface
         private readonly HttpClientInterface $http,
         private readonly SettingsStoreInterface $settings,
         private readonly array $operations,
-        /** "user-management" (staff modules) or "student-portal"; each forwards only to its own API gateway. */
+        /** "user-management" (staff modules), "student-portal" or "parent-portal"; each forwards only to its own API gateway. */
         private readonly string $portal = 'user-management',
     ) {
-        if (!in_array($portal, ['user-management', 'student-portal'], true)) {
+        if (!in_array($portal, ['user-management', 'student-portal', 'parent-portal'], true)) {
             throw new ConnectorException('Unknown school portal.', 500);
         }
     }
 
     public function context(string $sessionToken, string $module = 'users'): array
     {
-        if ($this->portal === 'student-portal') {
+        if ($this->portal !== 'user-management') {
             return $this->send($sessionToken, 'GET', '/context', null, []);
         }
         if (!in_array($module, ['users', 'students', 'parents', 'exams', 'fees', 'elearning', 'timetable', 'attendance', 'hostel', 'staff', 'health', 'training', 'learner-support', 'voting', 'reports', 'safeguarding', 'document-designer'], true)) {

@@ -2,12 +2,15 @@
 // so it must not navigate itself away to the payment provider.
 import { toast } from "sonner"
 
-export function openCheckout(address: string) {
+export function openCheckout(
+  address: string,
+  message = "Checkout is ready. After payment, return here and refresh the course status.",
+) {
   const url = new URL(address)
   if (url.protocol !== "https:" || url.username || url.password) throw new Error("Invalid checkout address")
   toast(
     <div className="space-y-2">
-      <p>Checkout is ready. After payment, return here and refresh the course status.</p>
+      <p>{message}</p>
       <a className="font-semibold text-blue-700 underline" href={url.href} target="_blank" rel="noopener noreferrer">
         Open secure checkout
       </a>

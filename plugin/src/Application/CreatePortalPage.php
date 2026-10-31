@@ -21,7 +21,11 @@ final class CreatePortalPage
         if ($existing > 0 && $this->pages->isPublished($existing)) {
             return $existing;
         }
-        $fallback = $audience === PortalAudience::Student ? 'Student portal' : 'School portal';
+        $fallback = match ($audience) {
+            PortalAudience::Student => 'Student portal',
+            PortalAudience::Parent => 'Parent portal',
+            PortalAudience::Staff => 'School portal',
+        };
         $id = $this->pages->create(trim($title) ?: $fallback, $audience);
         $this->settings->save($config->withPage($audience, $id));
         return $id;

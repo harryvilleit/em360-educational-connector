@@ -5,7 +5,7 @@ Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
 Requires Plugins: em360-educational-management
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ This add-on for [EM360 School Connector](https://wordpress.org/plugins/em360-edu
 **How it works.**
 
 * It uses the school connection set up in EM360 School Connector, so the school connects only once.
-* Student and staff sign-ins are kept apart: a staff session never opens the student portal, and the reverse.
+* Student, parent and staff sign-ins are kept apart: each session opens only its own portal.
 * Every request goes through the connector's server-side gateway, which forwards only the operations listed in `resources/student-portal-routes.json`. The EM360 School API checks each one against the signed-in student's own records.
 * The screens are the same React screens as the EM360 student portal, served from this plugin in a frame on your own domain.
 
@@ -65,10 +65,16 @@ Yes. Place `[em360_student_portal]` on any page. The page created from the setup
 
 == Changelog ==
 
+= 1.0.1 =
+The EM360 logo in the portal sidebar now shows on school websites. When the browser is signed in to the parent portal, the student page offers to sign out of it first.
+
 = 1.0.0 =
 First release as an add-on. Previously part of the self-hosted EM360 School Connector package.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Logo fix and parent portal sign-in handling.
 
 = 1.0.0 =
 First release.

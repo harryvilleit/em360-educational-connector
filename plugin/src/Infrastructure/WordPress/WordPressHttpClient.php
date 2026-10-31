@@ -25,7 +25,7 @@ final class WordPressHttpClient implements HttpClientInterface
         $records = str_contains($url, '/WordPress/user-management/api/Safeguarding/') ||
             str_contains($url, '/WordPress/user-management/api/SchoolDocuments/') ||
             // Student portal: course workspaces, results and timetables for one learner.
-            str_contains($url, '/WordPress/student-portal/');
+            str_contains($url, '/WordPress/student-portal/') || str_contains($url, '/WordPress/parent-portal/');
         $generation = $training && (bool) preg_match('~/Training/Courses/[a-fA-F0-9-]{36}/Generate(?:\?|$)~', $url);
         $response = wp_safe_remote_request($url, [
             'method' => $method, 'headers' => $headers, 'body' => $body,

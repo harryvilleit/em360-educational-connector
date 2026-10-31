@@ -17,11 +17,15 @@ final class WordPressPortalPages implements PortalPageGatewayInterface
 
     public function create(string $title, PortalAudience $audience = PortalAudience::Staff): int
     {
-        $student = $audience === PortalAudience::Student;
+        $slug = match ($audience) {
+            PortalAudience::Student => 'student-portal',
+            PortalAudience::Parent => 'parent-portal',
+            PortalAudience::Staff => 'school-portal',
+        };
         $id = wp_insert_post([
             'post_title' => $title,
-            'post_name' => $student ? 'student-portal' : 'school-portal',
-            'post_content' => $student ? '[em360_student_portal]' : '[em360_school_portal]',
+            'post_name' => $slug,
+            'post_content' => '[em360_' . str_replace('-', '_', $slug) . ']',
             'post_type' => 'page',
             'post_status' => 'publish',
         ], true);

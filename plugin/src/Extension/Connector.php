@@ -26,6 +26,9 @@ final class Connector
     /** Raised when this API changes incompatibly. */
     public const API_VERSION = 1;
 
+    /** Portals add-ons may build on; checked by each add-on before it registers. */
+    public const PORTALS = ['student-portal', 'parent-portal'];
+
     public function __construct(
         private readonly SettingsStoreInterface $settings,
         private readonly ConnectionStoreInterface $connections,
@@ -75,7 +78,7 @@ final class Connector
     }
 
     /**
-     * A gateway to one EM360 portal API ("student-portal" or "user-management") that forwards only the
+     * A gateway to one EM360 portal API ("student-portal", "parent-portal" or "user-management") that forwards only the
      * operations in `$routes`, the add-on's own operation catalogue.
      *
      * @param array<int, array<string, mixed>> $routes

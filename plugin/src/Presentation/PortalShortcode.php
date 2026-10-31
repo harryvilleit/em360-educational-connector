@@ -16,8 +16,8 @@ final class PortalShortcode
     public function register(): void
     {
         add_shortcode('em360_school_portal', [$this, 'render']);
-        // The student portal shortcode belongs to the EM360 Student Portal add-on. Until it is active,
-        // a student portal page says so instead of showing the raw shortcode.
+        // The student and parent portal shortcodes belong to their add-ons. Until an add-on is active,
+        // its page says so instead of showing the raw shortcode.
         add_action('init', [$this, 'studentPortalPlaceholder'], 20);
         add_action('template_redirect', [$this, 'preventPageCache']);
         add_action('wp_enqueue_scripts', [$this, 'enqueueForPage']);
@@ -35,9 +35,11 @@ final class PortalShortcode
 
     public function studentPortalPlaceholder(): void
     {
-        if (!shortcode_exists('em360_student_portal')) {
-            add_shortcode('em360_student_portal', static fn (): string =>
-                '<p class="em360-portal">' . esc_html('The student portal is not available on this website yet.') . '</p>');
+        foreach (['student', 'parent'] as $portal) {
+            if (!shortcode_exists('em360_' . $portal . '_portal')) {
+                add_shortcode('em360_' . $portal . '_portal', static fn (): string =>
+                    '<p class="em360-portal">' . esc_html('The ' . $portal . ' portal is not available on this website yet.') . '</p>');
+            }
         }
     }
 
@@ -58,7 +60,8 @@ final class PortalShortcode
     public function preventPageCache(): void
     {
         if (is_singular() && ($post = get_post()) !== null
-            && (has_shortcode($post->post_content, 'em360_school_portal') || has_shortcode($post->post_content, 'em360_student_portal'))) {
+            && (has_shortcode($post->post_content, 'em360_school_portal') || has_shortcode($post->post_content, 'em360_student_portal')
+                || has_shortcode($post->post_content, 'em360_parent_portal'))) {
             if (!defined('DONOTCACHEPAGE')) {
                 define('DONOTCACHEPAGE', true); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- the shared constant page-cache plugins read.
             }

@@ -97,11 +97,11 @@
       )
       if (notice) message(notice, true)
     }
-    const otherPortal = () => {
+    const otherPortal = (portal) => {
       page(
         node("div", "STUDENT PORTAL", "em360-eyebrow"),
         node("h1", schoolName),
-        node("p", "This browser is signed in to the staff portal. Sign out of it to sign in as a student."),
+        node("p", "This browser is signed in to the " + (portal === "parent" ? "parent" : "staff") + " portal. Sign out of it to sign in as a student."),
         button("Sign out and continue", async () => {
           await api("logout", "POST")
           login()
@@ -144,7 +144,7 @@
         return
       }
       if (data.signedIn) open()
-      else if (data.signedInElsewhere === "staff") otherPortal()
+      else if (data.signedInElsewhere) otherPortal(data.signedInElsewhere)
       else login()
     }
     init().catch((error) => {

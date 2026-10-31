@@ -21,6 +21,7 @@ export const HomeRoutes = {
   products: "/products",
   contact: "/contact",
   about: "/about",
+  wordpress: "/wordpress",
   solution: "/solutions/:solutionId",
   aiSchools: "/solutions/ai-schools",
   aiLms: "/solutions/ai-lms",

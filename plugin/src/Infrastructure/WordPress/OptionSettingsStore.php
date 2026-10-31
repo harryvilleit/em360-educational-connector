@@ -22,12 +22,13 @@ final class OptionSettingsStore implements SettingsStoreInterface
             RecordCodec::text($record, 'frontend_url') ?: 'https://em360s.com',
             RecordCodec::number($record, 'page_id'),
             RecordCodec::number($record, 'student_page_id'),
+            RecordCodec::number($record, 'parent_page_id'),
         );
     }
 
     public function save(ConnectorConfig $config): void
     {
-        $record = ['api_url' => $config->apiUrl, 'frontend_url' => $config->frontendUrl, 'page_id' => $config->pageId, 'student_page_id' => $config->studentPageId];
+        $record = ['api_url' => $config->apiUrl, 'frontend_url' => $config->frontendUrl, 'page_id' => $config->pageId, 'student_page_id' => $config->studentPageId, 'parent_page_id' => $config->parentPageId];
         if (!update_option(self::OPTION, $record, false) && get_option(self::OPTION) !== $record) {
             throw new ConnectorException('The website could not save its configuration.', 503);
         }

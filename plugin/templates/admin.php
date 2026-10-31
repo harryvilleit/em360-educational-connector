@@ -9,6 +9,9 @@ if (!defined('ABSPATH')) { exit; }
 /** @var string $studentPortalUrl */
 /** @var bool $studentPagePublished */
 /** @var bool $studentPortal */
+/** @var string $parentPortalUrl */
+/** @var bool $parentPagePublished */
+/** @var bool $parentPortal */
 ?>
         <div class="wrap em360-admin"><div class="em360-brand">EM360 <span>School connector</span></div>
         <h1>Your school, on your website.</h1><p>Connect an existing EM360 school and give owners and staff a secure overview on this WordPress website.</p>
@@ -30,10 +33,15 @@ if (!defined('ABSPATH')) { exit; }
         <?php if ($pagePublished) : ?><p>Your portal page is ready.</p><a class="button button-primary" href="<?php echo esc_url($portalUrl); ?>">Open school portal</a>
         <?php else : ?><p>Create a page containing the EM360 portal. Your other pages and theme will remain in place.</p><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="em360_create_page"><?php wp_nonce_field('em360_create_page'); ?><label>Page title<input name="page_title" value="School portal" maxlength="100"></label><?php submit_button('Create portal page', 'primary', 'submit', false, !$c ? ['disabled' => 'disabled'] : []); ?></form><?php endif; ?>
         <p>You can also place <code>[em360_school_portal]</code> on a page. The generated page is used as the sign-in return address.</p></div>
-        <?php if ($studentPortal) : ?><div class="em360-panel"><h2>4. Publish the student portal</h2>
+        <?php $em360_step = 4; ?>
+        <?php if ($studentPortal) : ?><div class="em360-panel"><h2><?php echo esc_html((string) $em360_step++); ?>. Publish the student portal</h2>
         <?php if ($studentPagePublished) : ?><p>Your student portal page is ready. Students sign in with their EM360 student account and see only their own records.</p><a class="button button-primary" href="<?php echo esc_url($studentPortalUrl); ?>">Open student portal</a>
         <?php else : ?><p>Create a separate page where students sign in to their own portal: timetable, results, attendance, e-learning, voting and more.</p><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="em360_create_student_page"><?php wp_nonce_field('em360_create_student_page'); ?><label>Page title<input name="page_title" value="Student portal" maxlength="100"></label><?php submit_button('Create student portal page', 'primary', 'submit', false, !$c ? ['disabled' => 'disabled'] : []); ?></form><?php endif; ?>
         <p>You can also place <code>[em360_student_portal]</code> on a page. The generated page is used as the student sign-in return address.</p></div><?php endif; ?>
+        <?php if ($parentPortal) : ?><div class="em360-panel"><h2><?php echo esc_html((string) $em360_step++); ?>. Publish the parent portal</h2>
+        <?php if ($parentPagePublished) : ?><p>Your parent portal page is ready. Parents sign in with their EM360 parent account and see only their own children's records.</p><a class="button button-primary" href="<?php echo esc_url($parentPortalUrl); ?>">Open parent portal</a>
+        <?php else : ?><p>Create a separate page where parents sign in to follow their children: fees and payments, results, attendance, timetable, consent, chat and more.</p><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="em360_create_parent_page"><?php wp_nonce_field('em360_create_parent_page'); ?><label>Page title<input name="page_title" value="Parent portal" maxlength="100"></label><?php submit_button('Create parent portal page', 'primary', 'submit', false, !$c ? ['disabled' => 'disabled'] : []); ?></form><?php endif; ?>
+        <p>You can also place <code>[em360_parent_portal]</code> on a page. The generated page is used as the parent sign-in return address.</p></div><?php endif; ?>
         <p><a href="<?php echo esc_url(rtrim($s['frontend_url'], '/') . '/wordpress/connections'); ?>" target="_blank" rel="noopener noreferrer">Manage connected websites in EM360</a></p>
         <p>Register or connect your school, sign in, and switch between your permitted modules. Dedicated portal pages use the full-width school workspace. User Management runs inside WordPress; other modules open in EM360 until their WordPress versions are added.</p>
         </div>

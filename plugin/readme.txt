@@ -4,7 +4,7 @@ Tags: school management, education, school, staff portal, learning
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.27.2
+Stable tag: 0.28.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,7 +70,11 @@ Requirements: HTTPS, a single-site WordPress install, PHP 8.1 or later with Open
 
 = Is there a student portal? =
 
-Yes. The free EM360 Student Portal add-on (em360-educational-student-portal) adds a student sign-in page that uses this plugin's school connection. Install it alongside this plugin, then create the student page from step 4 of the setup screen.
+Yes. The free EM360 Student Portal add-on (em360-educational-student-portal) adds a student sign-in page that uses this plugin's school connection. Install it alongside this plugin, then create the student page from the setup screen.
+
+= Is there a parent portal? =
+
+Yes. The free EM360 Parent Portal add-on (em360-educational-parent-portal) adds a parent sign-in page that uses this plugin's school connection. Parents see only their own children's records, and card payments open the payment provider's checkout in a new tab. Install it alongside this plugin, then create the parent page from the setup screen.
 
 = Do I need an EM360 account? =
 
@@ -89,6 +93,9 @@ No. Exclude the portal pages, the plugin's REST routes and the sign-in callback 
 Disconnect the website first. Uninstalling removes the plugin's settings from WordPress. School records in EM360 and the pages the plugin created are kept.
 
 == Changelog ==
+
+= 0.28.0 =
+Adds parent portal support for the new EM360 Parent Portal add-on: a parent sign-in audience kept apart from staff and student sessions, a "Create parent portal page" step on the setup screen, and a short notice on `[em360_parent_portal]` pages until the add-on is installed. The extension API now lists the portals it supports (`Connector::PORTALS`). Fixes portal screens that could stop working after they opened: the app's main file was loaded twice (once with a `?ver=` address), which started two copies of React.
 
 = 0.27.2 =
 The self-hosted package now unpacks to the em360-educational-management folder, the folder the EM360 Student Portal add-on requires, so new installs work with the add-on straight away. Sites installed under another folder name keep it when they update.
@@ -218,6 +225,9 @@ Rebuilt PHP using typed domain models, focused application services, narrow inte
 Initial school-connector foundation: setup, approval, school-scoped sign-in, read-only dashboard and website revocation.
 
 == Upgrade Notice ==
+
+= 0.28.0 =
+Required by the EM360 Parent Portal add-on, and fixes portal screens that stopped working after opening. No settings change.
 
 = 0.27.2 =
 Package folder change for new installs. No settings change.

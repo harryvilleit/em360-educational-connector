@@ -42,7 +42,7 @@ final class PortalPageLayout
         // A generated portal or a Gutenberg Shortcode block gets the full-width canvas.
         // Pages with other content keep their theme layout and can still embed the portal.
         $content = trim((string) preg_replace('/<!--.*?-->/s', '', $post->post_content));
-        if (!preg_match('/^\[em360_(?:school|student)_portal(\s[^\]]*)?\s*\/?\]$/D', $content, $matches)) {
+        if (!preg_match('/^\[em360_(?:school|student|parent)_portal(\s[^\]]*)?\s*\/?\]$/D', $content, $matches)) {
             return false;
         }
         $attributes = shortcode_parse_atts($matches[1] ?? '');

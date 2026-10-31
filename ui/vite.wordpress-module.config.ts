@@ -15,6 +15,7 @@ const modules: Record<string, string> = {
   safeguarding: "safeguarding-v022",
   "document-designer": "document-designer-v022",
   "student-portal": "student-portal-v024",
+  "parent-portal": "parent-portal-v027",
 }
 const root = path.resolve(import.meta.dirname)
 const replacements: Record<string, string> = {
@@ -56,7 +57,9 @@ export default defineConfig(({ mode: moduleName }) => {
           const mapped =
             moduleName === "student-portal"
               ? { ...replacements, "wordpress/runtime.ts": "wordpress/student-runtime.ts" }
-              : replacements
+              : moduleName === "parent-portal"
+                ? { ...replacements, "wordpress/runtime.ts": "wordpress/parent-runtime.ts" }
+                : replacements
           for (const [original, replacement] of Object.entries(mapped))
             if (
               candidate === path.join(root, original) ||
@@ -64,6 +67,20 @@ export default defineConfig(({ mode: moduleName }) => {
             )
               return path.join(root, replacement)
           return null
+        },
+      },
+      {
+        // Sidebars show "/em360-logo.png" from the main site's public folder. A WordPress site has no such file,
+        // so the logo is bundled with the module and addressed relative to it.
+        name: "wordpress-logo",
+        enforce: "pre",
+        transform(code, id) {
+          if (!id.startsWith(path.join(root, "src")) || !code.includes('"/em360-logo.png"')) return null
+          const logo = JSON.stringify(path.join(root, "public", "em360-logo.png"))
+          return (
+            `import __em360Logo from ${logo};\n` +
+            code.replaceAll('src="/em360-logo.png"', "src={__em360Logo}").replaceAll('"/em360-logo.png"', "__em360Logo")
+          )
         },
       },
       wordpressOverrides(root),

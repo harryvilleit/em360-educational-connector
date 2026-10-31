@@ -58,7 +58,8 @@ final class PortalRestController extends \WP_REST_Controller
     /** @param \WP_REST_Request<array<string, mixed>> $request */
     private static function audience(\WP_REST_Request $request): PortalAudience
     {
-        return $request->get_param('audience') === 'student' ? PortalAudience::Student : PortalAudience::Staff;
+        $audience = PortalAudience::tryFrom((string) $request->get_param('audience'));
+        return $audience ?? PortalAudience::Staff;
     }
 
     public function dashboard(): \WP_REST_Response|\WP_Error
