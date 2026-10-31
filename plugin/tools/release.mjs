@@ -29,7 +29,8 @@ const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, value, i, a
   value.startsWith("--") ? [...pairs, [value.slice(2), all[i + 1]?.startsWith("--") || all[i + 1] === undefined ? "true" : all[i + 1]]] : pairs, []))
 const fail = (message) => { console.error("\n✖ " + message); process.exit(1) }
 const wporg = args.wporg === "true"
-// WordPress.org derives the plugin's slug from its name; the folder and text domain must match it.
+// The folder both packages unpack to, which is also the WordPress.org slug and the text domain. The EM360
+// Student Portal add-on requires the plugin by this folder name ("Requires Plugins").
 const WPORG_SLUG = args.slug ?? "em360-educational-management"
 
 // --- version -------------------------------------------------------------------------------------------------
@@ -86,7 +87,7 @@ if (!wporg) {
 // --- package -------------------------------------------------------------------------------------------------
 const excluded = new Set(["tools", "tests", "node_modules", ".git", ".github", ".idea", ".vscode", "dist", ".phpunit.cache"])
 const files = []
-const folder = wporg ? WPORG_SLUG : SLUG
+const folder = WPORG_SLUG
 const walk = (dir) => {
   for (const name of readdirSync(dir).sort()) {
     const full = join(dir, name), rel = relative(root, full).split(sep).join("/")

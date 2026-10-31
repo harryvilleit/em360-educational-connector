@@ -4,7 +4,7 @@ Tags: school management, education, school, staff portal, learning
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.27.1
+Stable tag: 0.27.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -89,6 +89,9 @@ No. Exclude the portal pages, the plugin's REST routes and the sign-in callback 
 Disconnect the website first. Uninstalling removes the plugin's settings from WordPress. School records in EM360 and the pages the plugin created are kept.
 
 == Changelog ==
+
+= 0.27.2 =
+The self-hosted package now unpacks to the em360-educational-management folder, the folder the EM360 Student Portal add-on requires, so new installs work with the add-on straight away. Sites installed under another folder name keep it when they update.
 
 = 0.27.1 =
 Self-hosted updates: "Compatible up to 7.1" now covers every 7.1.x release, as on WordPress.org, so WordPress 7.1.4 no longer shows the "has not been tested" warning.
@@ -215,6 +218,9 @@ Rebuilt PHP using typed domain models, focused application services, narrow inte
 Initial school-connector foundation: setup, approval, school-scoped sign-in, read-only dashboard and website revocation.
 
 == Upgrade Notice ==
+
+= 0.27.2 =
+Package folder change for new installs. No settings change.
 
 = 0.27.1 =
 Removes the "not tested" warning on WordPress 7.1.x. No settings change.
