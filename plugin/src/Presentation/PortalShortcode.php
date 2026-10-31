@@ -10,17 +10,15 @@ final class PortalShortcode
         private readonly TemplateRenderer $views,
         private readonly string $pluginFile,
         private readonly string $version,
-        /** False in the WordPress.org build, which has no student portal. */
-        private readonly bool $studentPortal = true,
     ) {
     }
 
     public function register(): void
     {
         add_shortcode('em360_school_portal', [$this, 'render']);
-        if ($this->studentPortal) {
-            add_shortcode('em360_student_portal', [$this, 'renderStudent']);
-        }
+        // The student portal shortcode belongs to the EM360 Student Portal add-on. Until it is active,
+        // a student portal page says so instead of showing the raw shortcode.
+        add_action('init', [$this, 'studentPortalPlaceholder'], 20);
         add_action('template_redirect', [$this, 'preventPageCache']);
         add_action('wp_enqueue_scripts', [$this, 'enqueueForPage']);
     }
@@ -35,33 +33,19 @@ final class PortalShortcode
         ]);
     }
 
-    /** The student portal page: its own sign-in, and the React student portal once signed in. */
-    public function renderStudent(): string
+    public function studentPortalPlaceholder(): void
     {
-        $this->enqueueStudentAssets();
-        return $this->views->render('student-portal', [
-            'restBase' => rest_url('em360/v1/'),
-            'frameUrl' => admin_url('admin-post.php?action=em360_student_portal'),
-            'homeUrl' => home_url('/'),
-        ]);
+        if (!shortcode_exists('em360_student_portal')) {
+            add_shortcode('em360_student_portal', static fn (): string =>
+                '<p class="em360-portal">' . esc_html('The student portal is not available on this website yet.') . '</p>');
+        }
     }
 
     public function enqueueForPage(): void
     {
-        if (is_singular() && ($post = get_post()) !== null) {
-            if (has_shortcode($post->post_content, 'em360_school_portal')) {
-                $this->enqueueAssets();
-            }
-            if ($this->studentPortal && has_shortcode($post->post_content, 'em360_student_portal')) {
-                $this->enqueueStudentAssets();
-            }
+        if (is_singular() && ($post = get_post()) !== null && has_shortcode($post->post_content, 'em360_school_portal')) {
+            $this->enqueueAssets();
         }
-    }
-
-    private function enqueueStudentAssets(): void
-    {
-        wp_enqueue_style('em360-portal', plugins_url('assets/portal.css', $this->pluginFile), [], $this->version);
-        wp_enqueue_script('em360-student-portal', plugins_url('assets/student-portal.js', $this->pluginFile), [], $this->version, true);
     }
 
     private function enqueueAssets(): void

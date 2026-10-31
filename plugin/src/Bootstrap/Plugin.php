@@ -10,7 +10,7 @@ use EM360\SchoolConnector\Presentation\CallbackController;
 use EM360\SchoolConnector\Presentation\PortalRestController;
 use EM360\SchoolConnector\Presentation\PortalShortcode;
 use EM360\SchoolConnector\Presentation\PortalPageLayout;
-use EM360\SchoolConnector\Presentation\StudentPortalController;
+use EM360\SchoolConnector\Extension\Connector;
 use EM360\SchoolConnector\Presentation\UserManagementController;
 
 final class Plugin
@@ -22,8 +22,7 @@ final class Plugin
         private readonly PortalShortcode $shortcode,
         private readonly UserManagementController $userManagement,
         private readonly PortalPageLayout $layout,
-        /** Absent in the WordPress.org build, which is School Management only. */
-        private readonly ?StudentPortalController $studentPortal,
+        private readonly Connector $extension,
         /** Absent in the WordPress.org build, which updates through WordPress.org. */
         private readonly ?PluginUpdater $updater = null,
     ) {
@@ -38,6 +37,8 @@ final class Plugin
         $this->userManagement->register();
         $this->layout->register();
         $this->updater?->register();
-        $this->studentPortal?->register();
+        // This runs on plugins_loaded, after every plugin file has loaded, so add-ons have already
+        // hooked this action from their main file whatever order WordPress loaded them in.
+        do_action('em360_connector_loaded', $this->extension);
     }
 }

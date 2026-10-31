@@ -15,7 +15,6 @@ return array(
     'EM360\\SchoolConnector\\Application\\SaveSettings' => $baseDir . '/src/Application/SaveSettings.php',
     'EM360\\SchoolConnector\\Application\\SignOut' => $baseDir . '/src/Application/SignOut.php',
     'EM360\\SchoolConnector\\Application\\StartAuthorization' => $baseDir . '/src/Application/StartAuthorization.php',
-    'EM360\\SchoolConnector\\Application\\StudentPortal' => $baseDir . '/src/Application/StudentPortal.php',
     'EM360\\SchoolConnector\\Application\\UserManagement' => $baseDir . '/src/Application/UserManagement.php',
     'EM360\\SchoolConnector\\Bootstrap\\Activation' => $baseDir . '/src/Bootstrap/Activation.php',
     'EM360\\SchoolConnector\\Bootstrap\\Plugin' => $baseDir . '/src/Bootstrap/Plugin.php',
@@ -52,6 +51,7 @@ return array(
     'EM360\\SchoolConnector\\Domain\\Token' => $baseDir . '/src/Domain/Token.php',
     'EM360\\SchoolConnector\\Domain\\UrlPolicy' => $baseDir . '/src/Domain/UrlPolicy.php',
     'EM360\\SchoolConnector\\Domain\\WebsiteContext' => $baseDir . '/src/Domain/WebsiteContext.php',
+    'EM360\\SchoolConnector\\Extension\\Connector' => $baseDir . '/src/Extension/Connector.php',
     'EM360\\SchoolConnector\\Infrastructure\\Http\\Em360ApiClient' => $baseDir . '/src/Infrastructure/Http/Em360ApiClient.php',
     'EM360\\SchoolConnector\\Infrastructure\\Http\\MultipartBody' => $baseDir . '/src/Infrastructure/Http/MultipartBody.php',
     'EM360\\SchoolConnector\\Infrastructure\\Http\\UserManagementApi' => $baseDir . '/src/Infrastructure/Http/UserManagementApi.php',
@@ -80,7 +80,6 @@ return array(
     'EM360\\SchoolConnector\\Presentation\\PortalRestController' => $baseDir . '/src/Presentation/PortalRestController.php',
     'EM360\\SchoolConnector\\Presentation\\PortalShortcode' => $baseDir . '/src/Presentation/PortalShortcode.php',
     'EM360\\SchoolConnector\\Presentation\\RequestGuard' => $baseDir . '/src/Presentation/RequestGuard.php',
-    'EM360\\SchoolConnector\\Presentation\\StudentPortalController' => $baseDir . '/src/Presentation/StudentPortalController.php',
     'EM360\\SchoolConnector\\Presentation\\TemplateRenderer' => $baseDir . '/src/Presentation/TemplateRenderer.php',
     'EM360\\SchoolConnector\\Presentation\\UserManagementController' => $baseDir . '/src/Presentation/UserManagementController.php',
 );

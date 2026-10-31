@@ -31,8 +31,6 @@ final class AdminController
         private readonly ErrorResponder $errors,
         private readonly string $pluginFile,
         private readonly string $version,
-        /** False in the WordPress.org build, which has no student portal. */
-        private readonly bool $studentPortal = true,
     ) {
     }
 
@@ -40,11 +38,7 @@ final class AdminController
     {
         add_action('admin_menu', [$this, 'menu']);
         add_action('admin_enqueue_scripts', [$this, 'assets']);
-        $actions = ['save', 'connect', 'register_school', 'disconnect', 'create_page'];
-        if ($this->studentPortal) {
-            $actions[] = 'create_student_page';
-        }
-        foreach ($actions as $action) {
+        foreach (['save', 'connect', 'register_school', 'disconnect', 'create_page', 'create_student_page'] as $action) {
             $method = match ($action) {
                 'create_page' => 'createPage', 'create_student_page' => 'createStudentPage', 'register_school' => 'registerSchool', default => $action
             };
@@ -80,7 +74,7 @@ final class AdminController
             'pagePublished' => $this->pages->isPublished($config->pageId),
             'studentPortalUrl' => $this->pages->url($config->studentPageId),
             'studentPagePublished' => $this->pages->isPublished($config->studentPageId),
-            'studentPortal' => $this->studentPortal,
+            'studentPortal' => $this->studentPortal(),
         ]);
     }
 
@@ -135,10 +129,19 @@ final class AdminController
     public function createStudentPage(): never
     {
         $this->guard->requireAction('em360_create_student_page');
+        if (!$this->studentPortal()) {
+            $this->navigation->admin('Install and activate the EM360 Student Portal add-on first.');
+        }
         $this->perform(
             fn () => $this->createPage->execute(sanitize_text_field($this->field('page_title')), PortalAudience::Student),
             'Student portal page ready. Add it to your website navigation for students.',
         );
+    }
+
+    /** The EM360 Student Portal add-on reports itself through this filter. */
+    private function studentPortal(): bool
+    {
+        return (bool) apply_filters('em360_connector_student_portal', false);
     }
 
     private function field(string $name): string

@@ -30,7 +30,6 @@ class ComposerStaticInit7496f30c5d9ebedbd85962d69e2ac2ba
         'EM360\\SchoolConnector\\Application\\SaveSettings' => __DIR__ . '/../..' . '/src/Application/SaveSettings.php',
         'EM360\\SchoolConnector\\Application\\SignOut' => __DIR__ . '/../..' . '/src/Application/SignOut.php',
         'EM360\\SchoolConnector\\Application\\StartAuthorization' => __DIR__ . '/../..' . '/src/Application/StartAuthorization.php',
-        'EM360\\SchoolConnector\\Application\\StudentPortal' => __DIR__ . '/../..' . '/src/Application/StudentPortal.php',
         'EM360\\SchoolConnector\\Application\\UserManagement' => __DIR__ . '/../..' . '/src/Application/UserManagement.php',
         'EM360\\SchoolConnector\\Bootstrap\\Activation' => __DIR__ . '/../..' . '/src/Bootstrap/Activation.php',
         'EM360\\SchoolConnector\\Bootstrap\\Plugin' => __DIR__ . '/../..' . '/src/Bootstrap/Plugin.php',
@@ -67,6 +66,7 @@ class ComposerStaticInit7496f30c5d9ebedbd85962d69e2ac2ba
         'EM360\\SchoolConnector\\Domain\\Token' => __DIR__ . '/../..' . '/src/Domain/Token.php',
         'EM360\\SchoolConnector\\Domain\\UrlPolicy' => __DIR__ . '/../..' . '/src/Domain/UrlPolicy.php',
         'EM360\\SchoolConnector\\Domain\\WebsiteContext' => __DIR__ . '/../..' . '/src/Domain/WebsiteContext.php',
+        'EM360\\SchoolConnector\\Extension\\Connector' => __DIR__ . '/../..' . '/src/Extension/Connector.php',
         'EM360\\SchoolConnector\\Infrastructure\\Http\\Em360ApiClient' => __DIR__ . '/../..' . '/src/Infrastructure/Http/Em360ApiClient.php',
         'EM360\\SchoolConnector\\Infrastructure\\Http\\MultipartBody' => __DIR__ . '/../..' . '/src/Infrastructure/Http/MultipartBody.php',
         'EM360\\SchoolConnector\\Infrastructure\\Http\\UserManagementApi' => __DIR__ . '/../..' . '/src/Infrastructure/Http/UserManagementApi.php',
@@ -95,7 +95,6 @@ class ComposerStaticInit7496f30c5d9ebedbd85962d69e2ac2ba
         'EM360\\SchoolConnector\\Presentation\\PortalRestController' => __DIR__ . '/../..' . '/src/Presentation/PortalRestController.php',
         'EM360\\SchoolConnector\\Presentation\\PortalShortcode' => __DIR__ . '/../..' . '/src/Presentation/PortalShortcode.php',
         'EM360\\SchoolConnector\\Presentation\\RequestGuard' => __DIR__ . '/../..' . '/src/Presentation/RequestGuard.php',
-        'EM360\\SchoolConnector\\Presentation\\StudentPortalController' => __DIR__ . '/../..' . '/src/Presentation/StudentPortalController.php',
         'EM360\\SchoolConnector\\Presentation\\TemplateRenderer' => __DIR__ . '/../..' . '/src/Presentation/TemplateRenderer.php',
         'EM360\\SchoolConnector\\Presentation\\UserManagementController' => __DIR__ . '/../..' . '/src/Presentation/UserManagementController.php',
     );

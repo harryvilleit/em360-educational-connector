@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EM360\SchoolConnector\Application;
+namespace EM360\StudentPortal;
 
 use EM360\SchoolConnector\Contracts\BrowserSessionStoreInterface;
 use EM360\SchoolConnector\Contracts\ClockInterface;

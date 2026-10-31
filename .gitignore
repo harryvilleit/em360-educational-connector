@@ -8,3 +8,4 @@ dist/
 .DS_Store
 # Built React bundles are produced by `npm run build:wordpress` in ui/.
 plugin/assets/*-v*/
+student-portal/assets/*-v*/

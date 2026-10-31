@@ -12,7 +12,11 @@ namespace EM360\SchoolConnector\Presentation;
  */
 final class AppFrame
 {
-    public function __construct(private readonly string $pluginFile)
+    /**
+     * @param string $pluginFile The main file of the plugin that ships the application.
+     * @param string|null $template The document template; defaults to this plugin's templates/frame.php.
+     */
+    public function __construct(private readonly string $pluginFile, private readonly ?string $template = null)
     {
     }
 
@@ -48,7 +52,7 @@ final class AppFrame
             'configuration' => (string) wp_json_encode($configuration, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
             'styles' => $handles,
         ];
-        require dirname($this->pluginFile) . '/templates/frame.php';
+        require $this->template ?? dirname(__DIR__, 2) . '/templates/frame.php';
         exit;
     }
 }

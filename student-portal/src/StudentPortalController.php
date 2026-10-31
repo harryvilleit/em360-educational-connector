@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EM360\SchoolConnector\Presentation;
+namespace EM360\StudentPortal;
 
-use EM360\SchoolConnector\Application\StudentPortal;
-use EM360\SchoolConnector\Contracts\SettingsStoreInterface;
 use EM360\SchoolConnector\Domain\ConnectorException;
 use EM360\SchoolConnector\Domain\ModuleRequest;
+use EM360\SchoolConnector\Extension\Connector;
 
 /** Serves the student portal frame and forwards its operations to the EM360 student gateway. */
 final class StudentPortalController
@@ -21,10 +20,8 @@ final class StudentPortalController
 
     public function __construct(
         private readonly StudentPortal $portal,
-        private readonly RequestGuard $guard,
-        private readonly ErrorResponder $errors,
+        private readonly Connector $connector,
         private readonly string $pluginFile,
-        private readonly SettingsStoreInterface $settings,
     ) {
     }
 
@@ -38,10 +35,10 @@ final class StudentPortalController
     public function routes(): void
     {
         register_rest_route('em360/v1', '/student-portal/context', [
-            'methods' => 'GET', 'callback' => [$this, 'context'], 'permission_callback' => [$this->guard, 'csrf'],
+            'methods' => 'GET', 'callback' => [$this, 'context'], 'permission_callback' => [$this->connector->guard(), 'csrf'],
         ]);
         register_rest_route('em360/v1', '/student-portal', [
-            'methods' => 'POST', 'callback' => [$this, 'execute'], 'permission_callback' => [$this->guard, 'csrf'],
+            'methods' => 'POST', 'callback' => [$this, 'execute'], 'permission_callback' => [$this->connector->guard(), 'csrf'],
         ]);
     }
 
@@ -51,7 +48,7 @@ final class StudentPortalController
         try {
             return new \WP_REST_Response($this->portal->context());
         } catch (\Throwable $error) {
-            return $this->errors->rest($error);
+            return $this->connector->errors()->rest($error);
         }
     }
 
@@ -65,7 +62,7 @@ final class StudentPortalController
             }
             return new \WP_REST_Response($this->portal->execute(ModuleRequest::fromArray($request->get_json_params())));
         } catch (\Throwable $error) {
-            return $this->errors->rest($error);
+            return $this->connector->errors()->rest($error);
         }
     }
 
@@ -75,9 +72,9 @@ final class StudentPortalController
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read-only shell; checked against the screen allow-list below.
         $requested = isset($_GET['path']) && is_string($_GET['path']) ? trim(wp_unslash($_GET['path']), "/ \t") : '';
         $path = in_array($requested, self::SCREENS, true) ? $requested : '';
-        (new AppFrame($this->pluginFile))->output(self::ASSETS, [
+        $this->connector->frame($this->pluginFile)->output(self::ASSETS, [
             'restBase' => rest_url('em360/v1/'), 'initialPath' => $path,
-            'module' => 'student-portal', 'frontendBase' => $this->settings->get()->frontendUrl,
+            'module' => 'student-portal', 'frontendBase' => $this->connector->settings()->get()->frontendUrl,
         ]);
     }
 }

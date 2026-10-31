@@ -38,7 +38,7 @@ final class TemplateRenderer
 
     private function assertKnown(string $name): void
     {
-        if (!in_array($name, ['admin', 'portal', 'student-portal'], true)) {
+        if (!in_array($name, ['admin', 'portal'], true)) {
             throw new \InvalidArgumentException('Unknown plugin template.');
         }
     }

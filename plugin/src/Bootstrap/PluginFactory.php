@@ -12,8 +12,8 @@ use EM360\SchoolConnector\Application\GetSchoolDashboard;
 use EM360\SchoolConnector\Application\SaveSettings;
 use EM360\SchoolConnector\Application\SignOut;
 use EM360\SchoolConnector\Application\StartAuthorization;
-use EM360\SchoolConnector\Application\StudentPortal;
 use EM360\SchoolConnector\Application\UserManagement;
+use EM360\SchoolConnector\Extension\Connector;
 use EM360\SchoolConnector\Infrastructure\Http\UserManagementApi;
 use EM360\SchoolConnector\Presentation\UserManagementController;
 use EM360\SchoolConnector\Infrastructure\Http\Em360ApiClient;
@@ -40,7 +40,6 @@ use EM360\SchoolConnector\Presentation\PortalRestController;
 use EM360\SchoolConnector\Presentation\PortalShortcode;
 use EM360\SchoolConnector\Presentation\PortalPageLayout;
 use EM360\SchoolConnector\Presentation\RequestGuard;
-use EM360\SchoolConnector\Presentation\StudentPortalController;
 use EM360\SchoolConnector\Presentation\TemplateRenderer;
 
 /** The only composition root: dependencies are passed explicitly, never located by services. */
@@ -65,21 +64,7 @@ final class PluginFactory
         $notices = new AdminNotices();
         $navigation = new Navigation($notices, $settings, $pages);
         $errors = new ErrorResponder();
-        // The WordPress.org build is School Management only and ships without the student portal.
-        $studentPortal = class_exists(StudentPortalController::class)
-            ? new StudentPortalController(
-                new StudentPortal(
-                    new UserManagementApi(new WordPressHttpClient(), $settings, self::catalogue(dirname($pluginFile) . '/resources/student-portal-routes.json'), 'student-portal'),
-                    $sessions,
-                    $connections,
-                    $clock,
-                ),
-                new RequestGuard($sessions, $website),
-                $errors,
-                $pluginFile,
-                $settings,
-            )
-            : null;
+        $guard = new RequestGuard($sessions, $website);
 
         return new Plugin(
             new AdminController(
@@ -97,7 +82,6 @@ final class PluginFactory
                 $errors,
                 $pluginFile,
                 $version,
-                $studentPortal !== null,
             ),
             new CallbackController($complete, $navigation, $errors),
             new PortalRestController(
@@ -108,7 +92,7 @@ final class PluginFactory
                 new RequestGuard($sessions, $website),
                 $errors,
             ),
-            new PortalShortcode($views, $pluginFile, $version, $studentPortal !== null),
+            new PortalShortcode($views, $pluginFile, $version),
             new UserManagementController(
                 new UserManagement(
                     new UserManagementApi(new WordPressHttpClient(), $settings, self::catalogue(dirname($pluginFile) . '/resources/user-management-routes.json')),
@@ -122,7 +106,8 @@ final class PluginFactory
                 $settings,
             ),
             new PortalPageLayout(dirname($pluginFile) . '/templates/workspace.php'),
-            $studentPortal,
+            // Add-ons (such as EM360 Student Portal) build on the connection, sessions and gateway set up here.
+            new Connector($settings, $connections, $sessions, $clock, $guard, $errors, $pluginFile, $version),
             // The WordPress.org build ships without the self-updater and updates through WordPress.org.
             class_exists(PluginUpdater::class) ? new PluginUpdater($settings, $pluginFile, $version) : null,
         );

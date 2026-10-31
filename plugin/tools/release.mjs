@@ -15,8 +15,7 @@
 // Builds the WordPress.org directory package instead: the same plugin without the self-updater (no Update URI
 // header, no PluginUpdater/PluginRelease classes, no release key), because directory plugins update only through
 // WordPress.org. It is not signed and needs no key. Both packages come from the same source and version.
-// The directory build is School Management only: it also leaves out the student sign-in portal
-// ([em360_student_portal]), which stays in the self-hosted package.
+// The student portal is a separate add-on plugin (em360-educational-student-portal).
 import { createHash, createPrivateKey, createPublicKey, generateKeyPairSync, sign } from "node:crypto"
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs"
 import { homedir } from "node:os"
@@ -53,10 +52,8 @@ if (!changelog) console.warn(`! readme.txt has no "= ${version} =" changelog ent
 // --- WordPress.org package ------------------------------------------------------------------------------------
 // Files left out, and files rewritten on the way into the ZIP (the working copy is never changed).
 const updaterFiles = ["src/Infrastructure/WordPress/PluginUpdater.php", "src/Domain/PluginRelease.php", "resources/release-public-key.txt"]
-const studentPortalFiles = ["src/Presentation/StudentPortalController.php", "src/Application/StudentPortal.php", "templates/student-portal.php",
-  "assets/student-portal.js", "resources/student-portal-routes.json", "assets/student-portal-v024/"]
-const omitted = (rel) => updaterFiles.includes(rel) || studentPortalFiles.some((f) => (f.endsWith("/") ? rel === f.slice(0, -1) || rel.startsWith(f) : rel === f))
-const updaterClass = /PluginUpdater|PluginRelease|StudentPortalController|Application\\\\StudentPortal'/
+const omitted = (rel) => updaterFiles.includes(rel)
+const updaterClass = /PluginUpdater|PluginRelease/
 const rewrite = wporg ? {
   [`${SLUG}.php`]: (text) => text.replace(/^ \* Update URI: .*\r?\n/m, "").replace(/^ \* Text Domain: .*$/m, ` * Text Domain: ${WPORG_SLUG}`),
   "vendor/composer/autoload_classmap.php": (text) => text.split("\n").filter((line) => !updaterClass.test(line)).join("\n"),
@@ -140,8 +137,6 @@ if (wporg) {
     return /^\s*\*\s*Update URI:/m.test(text) || /update_plugins_|upgrader_pre_download|plugins_api/.test(text)
   })
   if (leftover) fail(`${leftover.rel} still contains self-update code; WordPress.org will reject the package.`)
-  const studentLeft = files.find((f) => f.full && /student-portal/.test(f.rel))
-  if (studentLeft) fail(`${studentLeft.rel} belongs to the student portal, which the WordPress.org build leaves out.`)
   console.log(`
 ✔ Built ${zipPath}
   ${files.filter((f) => f.full).length} files · ${(zip.length / 1048576).toFixed(1)} MB · WordPress.org build (no self-updater)

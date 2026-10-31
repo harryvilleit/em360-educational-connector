@@ -4,7 +4,7 @@ Tags: school management, education, school, staff portal, learning
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.26.2
+Stable tag: 0.27.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,10 @@ Requirements: HTTPS, a single-site WordPress install, PHP 8.1 or later with Open
 
 == Frequently Asked Questions ==
 
+= Is there a student portal? =
+
+Yes. The free EM360 Student Portal add-on (em360-educational-student-portal) adds a student sign-in page that uses this plugin's school connection. Install it alongside this plugin, then create the student page from step 4 of the setup screen.
+
 = Do I need an EM360 account? =
 
 Yes. The plugin is a connector for EM360 schools. A new school can register from the setup screen.
@@ -85,6 +89,9 @@ No. Exclude the portal pages, the plugin's REST routes and the sign-in callback 
 Disconnect the website first. Uninstalling removes the plugin's settings from WordPress. School records in EM360 and the pages the plugin created are kept.
 
 == Changelog ==
+
+= 0.27.0 =
+The student portal is now the separate EM360 Student Portal add-on, which builds on this plugin's school connection, sessions and gateway through a small extension API (the `em360_connector_loaded` action). Existing student portal pages keep working once the add-on is installed; until then they show a short notice.
 
 = 0.26.2 =
 Portal screens load their script and styles through the WordPress script-module and style queues.
@@ -205,6 +212,9 @@ Rebuilt PHP using typed domain models, focused application services, narrow inte
 Initial school-connector foundation: setup, approval, school-scoped sign-in, read-only dashboard and website revocation.
 
 == Upgrade Notice ==
+
+= 0.27.0 =
+If you use the student portal page, install the EM360 Student Portal add-on.
 
 = 0.26.2 =
 Coding-standards fix. No settings change.

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: EM360 School Connector
  * Description: Register or connect an EM360 school. Secure owner/staff sign-in, module navigation and a school overview.
- * Version: 0.26.2
+ * Version: 0.27.0
  * Requires at least: 6.6
  * Requires PHP: 8.1
  * Author: HarryVille Solutions Ltd
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('EM360_CONNECTOR_VERSION', '0.26.2');
+define('EM360_CONNECTOR_VERSION', '0.27.0');
 define('EM360_CONNECTOR_FILE', __FILE__);
 require_once __DIR__ . '/vendor/autoload.php';
 
