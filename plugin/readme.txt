@@ -33,9 +33,9 @@ EM360 is a school management platform. This plugin connects a school's WordPress
 
 An EM360 school account is required. A new school can register from the plugin's setup screen.
 
-== External service ==
+== External services ==
 
-This plugin connects to the EM360 platform operated by HarryVille Solutions Ltd. It does not work without it.
+This plugin connects to EM360, the school management platform operated by HarryVille Solutions Ltd (the plugin's author). It does not work without it.
 
 * **When:** while an administrator connects the website, whenever someone signs in to a portal, and on every portal screen that loads or saves school records.
 * **What is sent:** the website address and connection request when connecting; sign-in authorisation codes and session credentials; and the school records a signed-in user views, creates or changes (for example student, staff, attendance or fee records), including passwords typed into account-creation or password-reset forms.
@@ -43,10 +43,12 @@ This plugin connects to the EM360 platform operated by HarryVille Solutions Ltd.
 
 Some EM360 screens also load content directly from these services in the visitor's browser:
 
-* **Agora** (live classes: video, audio and chat, only when someone joins a live class). Terms: https://www.agora.io/en/terms-of-service/ · Privacy: https://www.agora.io/en/privacy-policy/
+* **Agora** (Agora, Inc.), the real-time video service behind EM360 live classes. It is used only when someone joins a live class. The visitor's browser then sends Agora their camera, microphone and screen-share streams, live-class chat and in-class signals (for example a raised hand), a per-class participant ID, and connection-quality statistics. Agora's SDK also contains an optional diagnostic log upload (to log-collector-query.dc3.agoralab.co); it is off by default and this plugin never turns it on. Terms: https://www.agora.io/en/terms-of-service/ · Privacy: https://www.agora.io/en/privacy-policy/
 * **Cloudflare Stream** (playing and uploading lesson videos the school added). Terms: https://www.cloudflare.com/website-terms/ · Privacy: https://www.cloudflare.com/privacypolicy/
 * **YouTube** and **Vimeo** (lesson videos a teacher linked from those sites). YouTube terms: https://www.youtube.com/t/terms · Google privacy: https://policies.google.com/privacy · Vimeo terms: https://vimeo.com/terms · Vimeo privacy: https://vimeo.com/privacy
 * **Unsplash** (placeholder cover images on e-learning class cards). Terms: https://unsplash.com/terms · Privacy: https://unsplash.com/privacy
+
+The bundled jsPDF library (used to create PDF report cards and invoices in the browser) contains an option that loads a viewer script from cdnjs.cloudflare.com. EM360 never uses that option, so nothing is loaded from there.
 
 EM360 legal information: https://em360s.com/legal
 Privacy notice: https://em360s.com/legal/privacy

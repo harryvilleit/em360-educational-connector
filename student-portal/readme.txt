@@ -26,7 +26,7 @@ This add-on for [EM360 School Connector](https://wordpress.org/plugins/em360-edu
 * Every request goes through the connector's server-side gateway, which forwards only the operations listed in `resources/student-portal-routes.json`. The EM360 School API checks each one against the signed-in student's own records.
 * The screens are the same React screens as the EM360 student portal, served from this plugin in a frame on your own domain.
 
-== External service ==
+== External services ==
 
 This plugin uses the EM360 platform operated by HarryVille Solutions Ltd, through EM360 School Connector.
 
@@ -36,7 +36,7 @@ This plugin uses the EM360 platform operated by HarryVille Solutions Ltd, throug
 
 Some screens also load content directly from these services in the visitor's browser:
 
-* **Agora** (live classes, only when a student joins one). Terms: https://www.agora.io/en/terms-of-service/ · Privacy: https://www.agora.io/en/privacy-policy/
+* **Agora** (Agora, Inc.), the real-time video service behind live classes, used only when a student joins one. The browser sends Agora the student's camera, microphone and screen-share streams, live-class chat and in-class signals, a per-class participant ID, and connection-quality statistics. Agora's optional diagnostic log upload (log-collector-query.dc3.agoralab.co) stays off. Terms: https://www.agora.io/en/terms-of-service/ · Privacy: https://www.agora.io/en/privacy-policy/
 * **Cloudflare Stream** (lesson videos the school added). Terms: https://www.cloudflare.com/website-terms/ · Privacy: https://www.cloudflare.com/privacypolicy/
 * **YouTube** and **Vimeo** (lesson videos a teacher linked from those sites). YouTube terms: https://www.youtube.com/t/terms · Google privacy: https://policies.google.com/privacy · Vimeo terms: https://vimeo.com/terms · Vimeo privacy: https://vimeo.com/privacy
 

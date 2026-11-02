@@ -29,7 +29,7 @@ This add-on for [EM360 School Connector](https://wordpress.org/plugins/em360-edu
 * Card payments open the payment provider's secure checkout in a new tab. Card details are never entered on, sent to or stored by the school's website.
 * The screens are the same React screens as the EM360 parent portal, served from this plugin in a frame on your own domain.
 
-== External service ==
+== External services ==
 
 This plugin uses the EM360 platform operated by HarryVille Solutions Ltd, through EM360 School Connector.
 
