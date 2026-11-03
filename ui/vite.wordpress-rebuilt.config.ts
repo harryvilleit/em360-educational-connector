@@ -3,6 +3,7 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import { wordpressOverrides } from "./wordpress/build/overrides"
+import { sourceBannerPlugin } from "./wordpress/build/source-banner"
 const root = path.resolve(import.meta.dirname)
 const replacements: Record<string, string> = {
   "src/pages/Dashboard/Hostel/components/EditRoomForm.tsx":
@@ -65,6 +66,7 @@ export default defineConfig({
       },
     },
     wordpressOverrides(root),
+      sourceBannerPlugin(),
     react(),
     tailwindcss(),
   ],

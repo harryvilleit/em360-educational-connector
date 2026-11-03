@@ -47,9 +47,11 @@ Lesson videos may also load from **Cloudflare Stream**, **YouTube** or **Vimeo**
 EM360 legal information: https://em360s.com/legal
 Privacy notice: https://em360s.com/legal/privacy
 
-== Source code ==
+== Source code and build ==
 
-The full source is public at https://github.com/harryvilleit/em360-educational-connector under GPLv2 or later. The React screens in `assets/parent-portal-v027/` are built from its `ui/` folder with `npm ci && npm run build:wordpress`.
+The JavaScript and CSS in `assets/parent-portal-v027/` are compiled from TypeScript and React. Their complete, human-readable source is public under GPLv2 or later at https://github.com/harryvilleit/em360-educational-connector, in the `ui/` folder (https://github.com/harryvilleit/em360-educational-connector/tree/main/ui). The entry point is `ui/wordpress/parent-portal/`; `ui/wordpress-bundles.json` lists every source file behind the bundle, and every compiled file starts with a comment that links to the source. The PHP files and `assets/parent-portal.js` are not compiled.
+
+To rebuild (Node.js 20 or later), from a clone of the repository: `cd ui && npm ci && npm run build:wordpress`. This writes the bundle into `parent-portal/assets/`.
 
 == Installation ==
 

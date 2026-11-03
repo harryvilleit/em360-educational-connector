@@ -5,6 +5,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { build } from "vite"
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
+const banner = "/*! EM360 for WordPress. Compiled file. Human-readable source (GPL-2.0-or-later): https://github.com/harryvilleit/em360-educational-connector/tree/main/ui Rebuild: cd ui && npm ci && npm run build:wordpress */"
 const assets = path.resolve(process.env.EM360_PLUGIN_ASSETS || path.join(root, "..", "plugin", "assets"))
 const studentAssets = path.resolve(process.env.EM360_STUDENT_PORTAL_ASSETS || path.join(root, "..", "student-portal", "assets"))
 const parentAssets = path.resolve(process.env.EM360_PARENT_PORTAL_ASSETS || path.join(root, "..", "parent-portal", "assets"))
@@ -17,5 +18,5 @@ for (const mode of Object.keys(folders)) {
 }
 process.env.EM360_PLUGIN_ASSETS = assets
 await build({ configFile: path.join(root, "vite.wordpress-rebuilt.config.ts") })
-await build({ configFile: false, root: path.join(root, "wordpress", "health"), base: "./", esbuild: { jsx: "automatic" }, build: { outDir: path.join(assets, "health-v017"), emptyOutDir: true, target: "es2022" } })
+await build({ configFile: false, root: path.join(root, "wordpress", "health"), base: "./", esbuild: { jsx: "automatic" }, build: { outDir: path.join(assets, "health-v017"), emptyOutDir: true, target: "es2022" }, plugins: [{ name: "wordpress-source-banner", enforce: "post", generateBundle(_o, bundle) { for (const f of Object.values(bundle)) { if (f.type === "chunk") f.code = banner + "\n" + f.code; else if (f.fileName.endsWith(".css") && typeof f.source === "string") f.source = banner + "\n" + f.source } } }] })
 console.log("Built the WordPress bundles into " + [assets, studentAssets, parentAssets].join(", "))

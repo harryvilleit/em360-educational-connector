@@ -17,7 +17,7 @@ WordPress version of a file lives at the same path under `ui/wordpress/overrides
 build (see `ui/wordpress/build/overrides.ts`); other WordPress-only code is in `ui/wordpress/`.
 
 The React bundles in a plugin release are built from `ui/`. `ui/wordpress-bundles.json` lists the source files that
-make up each bundle (1239 files in total).
+make up each bundle (1240 files in total).
 
 ## How it works
 

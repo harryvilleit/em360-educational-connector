@@ -4,7 +4,7 @@ Tags: school management, education, school, staff portal, learning
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.28.0
+Stable tag: 0.28.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,9 +55,29 @@ Privacy notice: https://em360s.com/legal/privacy
 Acceptable use: https://em360s.com/legal/acceptable-use
 Data deletion: https://em360s.com/legal/data-deletion
 
-== Source code ==
+== Source code and build ==
 
-The full source is public at https://github.com/harryvilleit/em360-educational-connector under GPLv2 or later. The React screens in `assets/*-v*/` are built from its `ui/` folder with `npm ci && npm run build:wordpress`; `ui/wordpress-bundles.json` lists the source files behind each bundle.
+The JavaScript and CSS in the versioned folders under `assets/` (for example `assets/user-management-v016/`) are compiled from TypeScript and React. Their complete, human-readable source is public under GPLv2 or later:
+
+* Repository: https://github.com/harryvilleit/em360-educational-connector
+* Source of the compiled files: the `ui/` folder, https://github.com/harryvilleit/em360-educational-connector/tree/main/ui (shared screens in `ui/src/`, WordPress code in `ui/wordpress/`, build settings in `ui/vite.wordpress.config.ts`, `ui/vite.wordpress-module.config.ts` and `ui/vite.wordpress-rebuilt.config.ts`).
+* `ui/wordpress-bundles.json` lists every source file behind each compiled folder.
+* Every compiled file starts with a comment that links to this source.
+
+Each compiled folder and where its entry point is:
+
+* `assets/user-management-v016/`: `ui/wordpress/index.html` and `ui/wordpress/main.tsx`
+* `assets/rebuilt-v0172/`: `ui/wordpress/rebuilt/`
+* `assets/health-v017/`: `ui/wordpress/health/`
+* `assets/training-v018/`, `assets/learner-support-v019/`, `assets/voting-v020/`, `assets/reports-v021/`, `assets/safeguarding-v022/`, `assets/document-designer-v022/`: `ui/wordpress/training/`, `ui/wordpress/learner-support/`, `ui/wordpress/voting/`, `ui/wordpress/reports/`, `ui/wordpress/safeguarding/` and `ui/wordpress/document-designer/`
+
+The PHP files, `assets/portal.js`, `assets/navigation.js` and `assets/portal.css` are not compiled.
+
+To rebuild the compiled files (Node.js 20 or later), from a clone of the repository:
+
+`cd ui && npm ci && npm run build:wordpress`
+
+This writes the compiled folders into `plugin/assets/`.
 
 == Installation ==
 
@@ -95,6 +115,9 @@ No. Exclude the portal pages, the plugin's REST routes and the sign-in callback 
 Disconnect the website first. Uninstalling removes the plugin's settings from WordPress. School records in EM360 and the pages the plugin created are kept.
 
 == Changelog ==
+
+= 0.28.1 =
+The plugin now always activates. On a multisite network, or when PHP's OpenSSL extension is missing, it stays idle and shows administrators a notice explaining why, instead of stopping the activation. Every compiled JavaScript and CSS file now starts with a link to its public source, and the readme's "Source code and build" section maps each compiled folder to its source and build steps.
 
 = 0.28.0 =
 Adds parent portal support for the new EM360 Parent Portal add-on: a parent sign-in audience kept apart from staff and student sessions, a "Create parent portal page" step on the setup screen, and a short notice on `[em360_parent_portal]` pages until the add-on is installed. The extension API now lists the portals it supports (`Connector::PORTALS`). Fixes portal screens that could stop working after they opened: the app's main file was loaded twice (once with a `?ver=` address), which started two copies of React.
@@ -227,6 +250,9 @@ Rebuilt PHP using typed domain models, focused application services, narrow inte
 Initial school-connector foundation: setup, approval, school-scoped sign-in, read-only dashboard and website revocation.
 
 == Upgrade Notice ==
+
+= 0.28.1 =
+Activation and documentation improvements. No settings change.
 
 = 0.28.0 =
 Required by the EM360 Parent Portal add-on, and fixes portal screens that stopped working after opening. No settings change.
